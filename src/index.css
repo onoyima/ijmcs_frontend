@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-bold text-brand-800;
+  }
+  
+  .bg-brand-900 h1, .bg-brand-900 h2, .bg-brand-900 h3, .bg-brand-900 h4, .bg-brand-900 h5, .bg-brand-900 h6,
+  .bg-brand-800 h1, .bg-brand-800 h2, .bg-brand-800 h3, .bg-brand-800 h4, .bg-brand-800 h5, .bg-brand-800 h6 {
+    @apply text-white;
+  }
+
+  body {
+    @apply bg-neutral-50 text-neutral-900 font-sans;
+  }
+}
+
+.glass {
+  @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-sm;
+}
+
+.custom-cursor {
+  @apply fixed w-8 h-8 rounded-full border-2 border-brand-500 pointer-events-none transition-transform duration-150 z-[9999];
+}
