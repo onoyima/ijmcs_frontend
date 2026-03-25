@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import api from '../../api/axiosInstance';
-import { FileText, User, Calendar, CheckCircle, XCircle, Users, Send, Download, Clock } from 'lucide-react';
+import { FileText, User, Calendar, CheckCircle, XCircle, Users, Send, Download, Clock, Globe } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const EditorSubmissionDetailPage = () => {
@@ -12,6 +12,10 @@ const EditorSubmissionDetailPage = () => {
   const [reviewers, setReviewers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState(false);
+  const [deciding, setDeciding] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [issues, setIssues] = useState([]);
+  const [publishData, setPublishData] = useState({ issue_id: '', pages: '', doi: '' });
   
   const [assignmentData, setAssignmentData] = useState({
     reviewer_id: '',
@@ -29,11 +33,11 @@ const EditorSubmissionDetailPage = () => {
         
         // Fetch eligible reviewers (simplified: fetch all users with reviewer role)
         // For now, I'll mock this or assume there's an /api/users/reviewers
-        // Let's assume /api/auth/profile returns a list if you're an editor? 
-        // No, let's just use a placeholder or hardcoded ID for demo if needed.
-        // I'll try to fetch all users and filter.
         // const { data: users } = await api.get('/api/admin/users'); // Hypothetical
-        // setReviewers(users.filter(u => u.role === 'reviewer'));
+        
+        // Fetch all published issues for the publish dropdown
+        const { data: issuesData } = await api.get('/api/issues');
+        setIssues(issuesData);
       } catch (err) {
         toast.error('Failed to load submission');
         navigate('/editor/control');
@@ -59,6 +63,35 @@ const EditorSubmissionDetailPage = () => {
       toast.error(err.response?.data?.message || 'Assignment failed');
     } finally {
       setAssigning(false);
+    }
+  };
+
+  const handleDecision = async (decision) => {
+    if (!window.confirm(`Are you sure you want to mark this submission as ${decision.toUpperCase()}?`)) return;
+    setDeciding(true);
+    try {
+      await api.post(`/api/submissions/${id}/decide`, { decision });
+      toast.success(`Submission ${decision}!`);
+      window.location.reload();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Decision failed');
+    } finally {
+      setDeciding(false);
+    }
+  };
+
+  const handlePublish = async (e) => {
+    e.preventDefault();
+    if (!publishData.issue_id) return toast.error('Select a target issue.');
+    setPublishing(true);
+    try {
+      await api.post(`/api/submissions/${id}/publish`, publishData);
+      toast.success('Article officially published live!');
+      navigate('/current-issue');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Publishing failed');
+    } finally {
+      setPublishing(false);
     }
   };
 
@@ -135,20 +168,74 @@ const EditorSubmissionDetailPage = () => {
                    </div>
 
                    {/* Quick Decision */}
-                   <div className="space-y-6">
-                      <h3 className="text-sm font-bold uppercase tracking-widest text-brand-700">Desk Decision</h3>
-                      <div className="grid grid-cols-2 gap-3">
-                         <button className="py-8 bg-green-50 text-green-700 rounded-2xl flex flex-col items-center justify-center border border-green-100 hover:bg-green-100 transition-all">
-                            <CheckCircle size={32} className="mb-2" />
-                            <span className="text-xs font-bold">Accept</span>
-                         </button>
-                         <button className="py-8 bg-red-50 text-red-700 rounded-2xl flex flex-col items-center justify-center border border-red-100 hover:bg-red-100 transition-all">
-                            <XCircle size={32} className="mb-2" />
-                            <span className="text-xs font-bold">Reject</span>
-                         </button>
-                      </div>
-                   </div>
+                   {submission.status !== 'published' && (
+                     <div className="space-y-6">
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-brand-700">Desk Decision</h3>
+                        <div className="grid grid-cols-2 gap-3">
+                           <button 
+                             onClick={() => handleDecision('accepted')}
+                             disabled={deciding || submission.status === 'accepted'}
+                             className="py-8 bg-green-50 text-green-700 rounded-2xl flex flex-col items-center justify-center border border-green-100 hover:bg-green-100 transition-all disabled:opacity-50"
+                           >
+                              <CheckCircle size={32} className="mb-2" />
+                              <span className="text-xs font-bold">{submission.status === 'accepted' ? 'Accepted' : 'Accept'}</span>
+                           </button>
+                           <button 
+                             onClick={() => handleDecision('rejected')}
+                             disabled={deciding || submission.status === 'rejected'}
+                             className="py-8 bg-red-50 text-red-700 rounded-2xl flex flex-col items-center justify-center border border-red-100 hover:bg-red-100 transition-all disabled:opacity-50"
+                           >
+                              <XCircle size={32} className="mb-2" />
+                              <span className="text-xs font-bold">{submission.status === 'rejected' ? 'Rejected' : 'Reject'}</span>
+                           </button>
+                        </div>
+                     </div>
+                   )}
                 </div>
+
+                {/* Publish to Issue (Only if Accepted) */}
+                {submission.status === 'accepted' && (
+                  <div className="mt-10 pt-10 border-t border-brand-100">
+                     <h3 className="text-sm font-bold uppercase tracking-widest text-accent-600 mb-6 flex items-center">
+                       <Globe size={18} className="mr-2" /> Publish to Live Journal
+                     </h3>
+                     <form onSubmit={handlePublish} className="space-y-4">
+                        <select 
+                          required
+                          className="w-full px-5 py-3 bg-neutral-50 border border-neutral-100 rounded-xl outline-none focus:ring-2 focus:ring-accent-500 font-medium text-brand-900"
+                          value={publishData.issue_id}
+                          onChange={(e) => setPublishData({...publishData, issue_id: e.target.value})}
+                        >
+                          <option value="">Select Target Issue...</option>
+                          {issues.map(iss => (
+                            <option key={iss.id} value={iss.id}>Vol. {iss.volume} No. {iss.number} ({iss.year}) - {iss.title || 'Regular Issue'}</option>
+                          ))}
+                        </select>
+                        <div className="grid grid-cols-2 gap-4">
+                           <input 
+                              type="text" 
+                              placeholder="Page Numbers (e.g. 15-28)"
+                              className="w-full px-5 py-3 bg-neutral-50 border border-neutral-100 rounded-xl outline-none focus:ring-2 focus:ring-accent-500 text-sm"
+                              value={publishData.pages}
+                              onChange={(e) => setPublishData({...publishData, pages: e.target.value})}
+                           />
+                           <input 
+                              type="text" 
+                              placeholder="Custom DOI (Optional)"
+                              className="w-full px-5 py-3 bg-neutral-50 border border-neutral-100 rounded-xl outline-none focus:ring-2 focus:ring-accent-500 text-sm font-mono"
+                              value={publishData.doi}
+                              onChange={(e) => setPublishData({...publishData, doi: e.target.value})}
+                           />
+                        </div>
+                        <button 
+                          disabled={publishing}
+                          className="w-full py-4 bg-brand-900 border-2 border-brand-900 text-white rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-transparent hover:text-brand-900 transition-all shadow-xl"
+                        >
+                           <Send size={18} /> <span>{publishing ? 'Publishing...' : 'Officially Publish Article Live'}</span>
+                        </button>
+                     </form>
+                  </div>
+                )}
              </div>
           </div>
 

@@ -48,9 +48,9 @@ const FloatingActions = () => {
 
       {/* Right: WhatsApp */}
       <div className="pointer-events-auto">
-        <a 
-          href="https://wa.me/2348033200000?text=Hello%20IJMCS%20Editorial%20Team,%20I%20have%20an%20inquiry." 
-          target="_blank" 
+        <a
+          href="https://wa.me/2348168438930?text=Hello%20IJMCS%20Editorial%20Team,%20I%20have%20an%20inquiry."
+          target="_blank"
           rel="noreferrer"
           className="bg-green-500 text-white p-4 rounded-full shadow-[0_4px_20px_rgba(34,197,94,0.4)] hover:bg-green-600 hover:scale-110 transition-all flex items-center justify-center group relative"
           aria-label="Chat on WhatsApp"
@@ -58,7 +58,7 @@ const FloatingActions = () => {
           <MessageCircle size={32} strokeWidth={2} />
           {/* Ripple Effect Background */}
           <span className="absolute -inset-2 rounded-full border border-green-500 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] opacity-75"></span>
-          
+
           {/* Tooltip */}
           <span className="absolute right-full mr-4 bg-brand-900 text-white px-4 py-2 rounded-xl text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl pointer-events-none">
             Chat with Editorial Team

@@ -15,7 +15,8 @@ const ReviewPage = () => {
   const [formData, setFormData] = useState({
     recommendation: 'revisions_minor',
     comments_to_author: '',
-    comments_to_editor: ''
+    comments_to_editor: '',
+    scores_json: { originality: 5, methodology: 5, language: 5, relevance: 5 }
   });
 
   useEffect(() => {
@@ -92,6 +93,27 @@ const ReviewPage = () => {
                        <option value="reject">Reject Submission</option>
                     </select>
                  </div>
+
+                  {/* Academic Rubric Scoring Matrix */}
+                  <div className="bg-neutral-50 p-8 rounded-3xl border border-neutral-100">
+                     <label className="block text-xs font-bold text-brand-800 uppercase tracking-widest mb-6">Academic Scoring Rubric (1 - 10)</label>
+                     <div className="space-y-6">
+                       {Object.entries(formData.scores_json).map(([key, value]) => (
+                         <div key={key} className="flex items-center gap-4">
+                           <span className="w-28 text-sm font-bold capitalize text-neutral-600">{key}</span>
+                           <input 
+                             type="range" 
+                             min="1" 
+                             max="10" 
+                             value={value} 
+                             onChange={(e) => setFormData({...formData, scores_json: {...formData.scores_json, [key]: parseInt(e.target.value)}})}
+                             className="flex-grow accent-accent-500 h-2 bg-neutral-200 rounded-full appearance-none outline-none cursor-pointer" 
+                           />
+                           <span className="w-12 text-right font-mono font-bold text-accent-600 bg-white px-2 py-1 rounded-md shadow-sm border border-neutral-100">{value}/10</span>
+                         </div>
+                       ))}
+                     </div>
+                  </div>
 
                  <div>
                     <label className="block text-xs font-bold text-brand-800 uppercase tracking-widest mb-4">Comments for the Author</label>
