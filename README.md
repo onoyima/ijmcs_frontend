@@ -107,7 +107,7 @@ IJMCS/
    \`\`\`
 2. Create a \`.env\` file in the \`client\` root:
    \`\`\`env
-   VITE_API_BASE_URL=http://localhost:5000
+   VITE_API_URL=http://localhost:5000/api
    \`\`\`
 3. Start the Vite development server:
    \`\`\`bash
@@ -132,7 +132,7 @@ The project is configured to automatically route external API requests properly 
 1. Link your repository to Vercel -> **New Project**.
 2. Point the Root Directory to \`client\`.
 3. Vercel automatically detects the Vite framework. 
-4. **Crucial Environment Variable:** Add \`VITE_API_BASE_URL=https://your-backend-domain.onrender.com\` so the UI stops pointing to \`localhost\` and hits your live server.
+4. **Crucial Environment Variable:** Add `VITE_API_URL=https://your-backend-domain.onrender.com/api` so the UI stops pointing to `localhost` and hits your live server.
 
 *(Note: The included \`vercel.json\` file guarantees that page reloads on your live URL do not trigger 404 errors due to Single-Page Application routing).*
 
