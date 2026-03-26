@@ -16,6 +16,15 @@ const Navbar = () => {
     navigate('/login');
   };
 
+  const getDashboardPath = () => {
+    if (!user) return '/login';
+    switch (user.role) {
+      case 'admin':  return '/admin';
+      case 'editor': return '/editor/control';
+      default:       return '/dashboard';
+    }
+  };
+
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Current Issue', path: '/current' },
@@ -119,7 +128,7 @@ const Navbar = () => {
               {user ? (
                 <div className="flex items-center space-x-3">
                   <Link
-                    to="/dashboard"
+                    to={getDashboardPath()}
                     className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl text-brand-100 transition-all border border-brand-700"
                     title="User Dashboard"
                   >

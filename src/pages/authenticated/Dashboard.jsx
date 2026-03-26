@@ -3,15 +3,21 @@ import { motion } from 'framer-motion';
 import api from '../../api/axiosInstance';
 import { useAuth } from '../../hooks/useAuth';
 import { BookOpen, Clock, CheckCircle, FileText, Plus, ChevronRight, AlertCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [submissions, setSubmissions] = useState([]);
   const [reviewTasks, setReviewTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (user?.role === 'admin') {
+      navigate('/admin');
+      return;
+    }
+    
     const dataFetch = async () => {
       try {
         const subRes = await api.get('/api/submissions/my-submissions');
@@ -46,7 +52,9 @@ const Dashboard = () => {
         {/* Welcome Header */}
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-serif font-bold text-brand-900 mb-2">Researcher Dashboard</h1>
+            <h1 className="text-4xl font-serif font-bold text-brand-900 mb-2">
+              {user?.role === 'reviewer' ? 'Reviewer Dashboard' : 'Scholar Dashboard'}
+            </h1>
             <p className="text-neutral-500">Welcome back, <span className="text-brand-700 font-bold">{user?.first_name}</span>. Manage your scholarly contributions.</p>
           </div>
           <Link 
