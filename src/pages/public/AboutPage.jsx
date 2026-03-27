@@ -31,7 +31,11 @@ const AboutPage = () => {
                 </p>
              </div>
              <div className="rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white relative">
-                 <img src="/images/hero-bg.png" alt="IJMCS Library" className="w-full h-full object-cover aspect-[4/3] hover:scale-105 transition-transform duration-700" />
+                 <img 
+                    src="/images/research_publishing_abstract_1774478132711.png" 
+                    alt="IJMCS Library" 
+                    className="w-full h-full object-cover aspect-[4/3] hover:scale-105 transition-transform duration-700" 
+                  />
                  <div className="absolute inset-0 bg-brand-900/10 mb-blend-multiply"></div>
              </div>
           </section>

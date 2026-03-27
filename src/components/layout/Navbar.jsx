@@ -62,7 +62,11 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-4 group">
             <div className="relative">
-              <img src="/images/ijmcs-logo.png" alt="IJMCS Logo" className="h-14 w-auto object-contain rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.2)] transform group-hover:scale-105 transition-transform duration-300 bg-white p-1" />
+              <img 
+                src="/images/ijmcs_logo_1774477688431.png" 
+                alt="IJMCS Official Logo" 
+                className="h-10 w-auto object-contain rounded-lg shadow-xl shadow-accent-500/10 hover:scale-105 transition-transform duration-300" 
+              />
               <div className="absolute -inset-1 bg-accent-500 opacity-20 blur-lg rounded-xl group-hover:opacity-40 transition-opacity"></div>
             </div>
             <div className="hidden md:block">
@@ -127,6 +131,13 @@ const Navbar = () => {
             <div className="flex items-center space-x-4 border-l border-brand-800 pl-6 ml-4">
               {user ? (
                 <div className="flex items-center space-x-3">
+                  <Link
+                    to="/profile"
+                    className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl text-brand-100 transition-all border border-brand-700"
+                    title="Profile Settings"
+                  >
+                    <User size={20} />
+                  </Link>
                   <Link
                     to={getDashboardPath()}
                     className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl text-brand-100 transition-all border border-brand-700"
@@ -206,6 +217,18 @@ const Navbar = () => {
                 <div className="space-y-4 pt-8 border-t border-brand-800">
                   <h4 className="text-[10px] uppercase font-black text-brand-500 tracking-[0.2em]">Publication Info</h4>
                   <div className="grid grid-cols-1 gap-4">
+                    {user && (
+                      <div className="py-2 border-b border-brand-800">
+                        <Link to="/profile" className="flex items-center space-x-4 text-brand-200 hover:text-white">
+                          <span className="p-2 bg-white/5 rounded-lg text-accent-500"><User size={16} /></span>
+                          <span className="font-bold text-sm">Profile Settings</span>
+                        </Link>
+                        <Link to={getDashboardPath()} className="flex items-center space-x-4 text-brand-200 hover:text-white mt-2">
+                          <span className="p-2 bg-white/5 rounded-lg text-accent-500"><LayoutDashboard size={16} /></span>
+                          <span className="font-bold text-sm">Dashboard</span>
+                        </Link>
+                      </div>
+                    )}
                     {[...journalLinks, ...policyLinks].map((link) => (
                       <Link key={link.name} to={link.path} className="flex items-center space-x-4 text-brand-200">
                          <span className="p-2 bg-white/5 rounded-lg text-accent-500">{link.icon}</span>

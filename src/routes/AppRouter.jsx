@@ -32,6 +32,7 @@ import EditorSubmissionDetailPage from '../pages/authenticated/EditorSubmissionD
 import IssueManagementPage from '../pages/authenticated/IssueManagementPage';
 import PaymentPage from '../pages/authenticated/PaymentPage';
 import AdminDashboardPage from '../pages/authenticated/AdminDashboardPage';
+import ProfileSettingsPage from '../pages/authenticated/ProfileSettingsPage';
 import HowToPayPage from '../pages/public/HowToPayPage';
 import EditorInChiefPage from '../pages/public/EditorInChiefPage';
 
@@ -80,6 +81,8 @@ const AppRouter = () => (
       <Route element={<RoleRoute roles={['admin']} />}>
         <Route path="/admin" element={<AdminDashboardPage />} />
       </Route>
+
+      <Route path="/profile" element={<ProfileSettingsPage />} />
     </Route>
 
     {/* Fallback */}

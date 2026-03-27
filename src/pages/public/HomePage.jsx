@@ -3,6 +3,11 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { BookOpen, Search, Bell, Users, Globe, Award, ChevronRight, Zap } from 'lucide-react';
 
+// Branding Asset Links
+const HERO_PATH = '/images/hero_academic_research_1774477934515.png';
+const COLLAB_PATH = '/images/about_mission_scholars_1774478158105.png';
+const REVIEW_PATH = '/images/peer_review_process_1774478231521.png';
+
 const HomePage = () => {
   const disciplines = [
     { title: 'Humanities', icon: '🎨', color: 'bg-blue-100', desc: 'Language, Literature, Philosophy, and Religious Studies.' },
@@ -26,11 +31,13 @@ const HomePage = () => {
       <section className="relative h-[90vh] flex items-center justify-center bg-brand-900 text-white overflow-hidden">
         {/* Dynamic Background */}
         <div className="absolute inset-0 z-0">
-          <img src="/images/hero-bg.png" alt="Research Library" className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-luminosity" />
-          <div className="absolute inset-0 bg-brand-900/80"></div>
-          <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-brand-700 blur-[150px] opacity-40"></div>
-          <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-accent-600 blur-[120px] opacity-20"></div>
-        </div>
+                <img 
+                  src={HERO_PATH} 
+                  alt="Academic Excellence" 
+                  className="w-full h-full object-cover opacity-20"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-950 via-brand-900/90 to-transparent"></div>
+             </div>
 
         <div className="container mx-auto px-4 z-10 text-center">
           <motion.div
@@ -126,7 +133,11 @@ const HomePage = () => {
                className="relative"
              >
                 <div className="aspect-square bg-neutral-100 rounded-[4rem] overflow-hidden shadow-2xl relative z-10 border-[16px] border-white">
-                    <img src="/images/about-mission.png" alt="Academic Presentation" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                    <img 
+                      src={COLLAB_PATH} 
+                      alt="Academic Presentation" 
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" 
+                    />
                     <div className="absolute inset-0 bg-brand-900/10 mix-blend-multiply"></div>
                 </div>
                 <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-accent-500/20 rounded-full blur-3xl z-0"></div>

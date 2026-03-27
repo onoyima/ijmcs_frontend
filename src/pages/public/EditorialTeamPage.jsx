@@ -42,7 +42,11 @@ const EditorialTeamPage = () => {
         <section className="mb-32">
            <div className="bg-neutral-50 rounded-[4rem] p-10 md:p-16 border border-brand-50 flex flex-col md:flex-row gap-12 items-center shadow-sm">
               <div className="w-full md:w-1/3 aspect-square rounded-[3rem] overflow-hidden shadow-xl flex-shrink-0 relative">
-                  <img src="/images/editorial-team.png" alt="Editorial Board" className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                  <img 
+                    src="/images/editorial_team_bg_1774478036378.png" 
+                    alt="Editorial Board" 
+                    className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700" 
+                  />
               </div>
               <div>
                  <span className="text-accent-500 font-bold uppercase tracking-[0.2em] text-[10px] mb-4 inline-block">Editor-in-Chief</span>

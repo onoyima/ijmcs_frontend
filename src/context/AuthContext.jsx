@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const isRole = useCallback((...roles) => {
-    return user && roles.includes(user.role);
+    return user && (user.role === 'admin' || roles.includes(user.role));
   }, [user]);
 
   return (
