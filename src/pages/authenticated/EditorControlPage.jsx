@@ -29,8 +29,7 @@ const EditorControlPage = () => {
   );
 
   return (
-    <div className="bg-neutral-50 min-h-screen py-12">
-      <div className="container mx-auto px-4 max-w-7xl">
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-8">
            <div className="flex items-center space-x-4">
               <div className="w-16 h-16 bg-brand-900 text-white rounded-3xl flex items-center justify-center shadow-xl">
@@ -123,7 +122,6 @@ const EditorControlPage = () => {
               </table>
            </div>
         </section>
-      </div>
     </div>
   );
 };

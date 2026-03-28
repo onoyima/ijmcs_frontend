@@ -29,9 +29,9 @@ const Footer = () => {
   return (
     <footer className="bg-brand-900 text-brand-100 pt-16 pb-8 border-t border-brand-800 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Column */}
-          <div className="col-span-1 lg:col-span-1">
+          <div className="col-span-1">
             <Link to="/" className="flex items-center space-x-3 mb-6">
               <div className="w-10 h-10 bg-accent-500 rounded-lg flex items-center justify-center font-serif text-2xl font-bold text-white">
                 I
@@ -57,46 +57,48 @@ const Footer = () => {
           </div>
 
           {/* Links Columns */}
-          <div>
-            <h4 className="text-white font-serif font-bold mb-6 text-lg">Journal Info</h4>
-            <ul className="space-y-4">
-              {footerLinks.journal.map(link => (
-                <li key={link.name}>
-                  <Link to={link.path} className="text-sm hover:text-accent-400 transition-colors flex items-center">
-                    <span className="w-1.5 h-1.5 bg-brand-700 rounded-full mr-2"></span>
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <div className="col-span-1 lg:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-8">
+            <div>
+              <h4 className="text-white font-serif font-bold mb-6 text-lg">Journal Info</h4>
+              <ul className="space-y-4">
+                {footerLinks.journal.map(link => (
+                  <li key={link.name}>
+                    <Link to={link.path} className="text-sm hover:text-accent-400 transition-colors flex items-center">
+                      <span className="w-1.5 h-1.5 bg-brand-700 rounded-full mr-2"></span>
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          <div>
-            <h4 className="text-white font-serif font-bold mb-6 text-lg">Policies</h4>
-            <ul className="space-y-4">
-              {footerLinks.policies.map(link => (
-                <li key={link.name}>
-                  <Link to={link.path} className="text-sm hover:text-accent-400 transition-colors flex items-center">
-                    <span className="w-1.5 h-1.5 bg-brand-700 rounded-full mr-2"></span>
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            <div>
+              <h4 className="text-white font-serif font-bold mb-6 text-lg">Policies</h4>
+              <ul className="space-y-4">
+                {footerLinks.policies.map(link => (
+                  <li key={link.name}>
+                    <Link to={link.path} className="text-sm hover:text-accent-400 transition-colors flex items-center">
+                      <span className="w-1.5 h-1.5 bg-brand-700 rounded-full mr-2"></span>
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          <div>
-            <h4 className="text-white font-serif font-bold mb-6 text-lg">Resources</h4>
-            <ul className="space-y-4">
-              {footerLinks.resources.map(link => (
-                <li key={link.name}>
-                  <Link to={link.path} className="text-sm hover:text-accent-400 transition-colors flex items-center">
-                    <span className="w-1.5 h-1.5 bg-brand-700 rounded-full mr-2"></span>
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <div className="col-span-2 md:col-span-1">
+              <h4 className="text-white font-serif font-bold mb-6 text-lg">Resources</h4>
+              <ul className="space-y-4">
+                {footerLinks.resources.map(link => (
+                  <li key={link.name}>
+                    <Link to={link.path} className="text-sm hover:text-accent-400 transition-colors flex items-center">
+                      <span className="w-1.5 h-1.5 bg-brand-700 rounded-full mr-2"></span>
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
 

@@ -4,22 +4,34 @@ import api from '../../api/axiosInstance';
 import { 
   Users, FileText, CheckCircle, Settings, Search, TrendingUp, 
   Shield, Mail, CreditCard, History, MessageSquare, Save, 
-  ChevronRight, AlertCircle, RefreshCw, BookOpen, Plus, Trash2, ShieldCheck
+  ChevronRight, AlertCircle, RefreshCw, BookOpen, Plus, Trash2, ShieldCheck, Globe
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import PageLoader from '../../components/common/PageLoader';
 
 const AdminDashboardPage = () => {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview');
   const [showAnnModal, setShowAnnModal] = useState(false);
   const [editingAnn, setEditingAnn] = useState(null);
-  const [annForm, setAnnForm] = useState({ title: '', content: '', is_public: true });
+  const [annForm, setAnnForm] = useState({ title: '', content: '', is_public: true, image_url: '', type: 'general' });
+  const [showUserEditModal, setShowUserEditModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [userEditForm, setUserEditForm] = useState({ first_name: '', last_name: '', email: '', password: '' });
   const [stats, setStats] = useState(null);
-  const [data, setData] = useState({ users: [], payments: [], audit: [], contacts: [], announcements: [] });
+  const [data, setData] = useState({ users: [], payments: [], audit: [], contacts: [], announcements: [], submissions: [] });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [apcAmount, setApcAmount] = useState('150');
+
+  // Sync tab with URL
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && tab !== activeTab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchDashData();
@@ -69,9 +81,32 @@ const AdminDashboardPage = () => {
     try {
       await api.patch(`/api/admin/users/${userId}/role`, { role: newRole });
       toast.success('User role updated');
-      fetchDashData(); // Refresh to see audit log and updated list
+      fetchDashData();
     } catch (err) {
       toast.error('Failed to update role');
+    }
+  };
+  
+  const handleVerifyUser = async (userId) => {
+    try {
+      await api.patch(`/api/admin/users/${userId}/verify`);
+      toast.success('User account manually verified');
+      fetchDashData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Verification failed');
+    }
+  };
+
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    try {
+      await api.patch(`/api/admin/users/${editingUser.id}/update`, userEditForm);
+      toast.success('User record updated and notification sent');
+      setShowUserEditModal(false);
+      setEditingUser(null);
+      fetchDashData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Update failed');
     }
   };
 
@@ -101,7 +136,7 @@ const AdminDashboardPage = () => {
       }
       setShowAnnModal(false);
       setEditingAnn(null);
-      setAnnForm({ title: '', content: '', is_public: true });
+      setAnnForm({ title: '', content: '', is_public: true, image_url: '', type: 'general' });
       fetchDashData();
     } catch (err) {
       console.error('❌ Announcement operation failed:', err.response?.data || err.message);
@@ -129,53 +164,11 @@ const AdminDashboardPage = () => {
     }
   };
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-50">
-      <div className="text-center">
-        <RefreshCw className="w-12 h-12 text-brand-500 animate-spin mx-auto mb-4" />
-        <p className="text-brand-900 font-serif font-bold text-xl">Loading System Core...</p>
-      </div>
-    </div>
-  );
+  if (loading) return <PageLoader />;
 
   return (
-    <div className="bg-neutral-50 min-h-screen flex">
-      {/* Sidebar Navigation */}
-      <aside className="w-72 bg-brand-900 text-white min-h-screen sticky top-0 hidden lg:flex flex-col p-8 border-r border-brand-800">
-        <div className="mb-12">
-          <h2 className="text-2xl font-serif font-bold">Admin Panel</h2>
-          <p className="text-brand-400 text-[10px] uppercase font-bold tracking-widest mt-1">IJMCS Governance</p>
-        </div>
-
-        <nav className="flex-grow space-y-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => handleTabClick(tab)}
-              className={`w-full flex items-center space-x-3 px-6 py-4 rounded-2xl transition-all font-bold text-sm ${
-                activeTab === tab.id ? 'bg-accent-500 text-brand-900 shadow-lg' : 'text-brand-200 hover:bg-white/5 hover:text-white'
-              }`}
-            >
-              <tab.icon size={18} />
-              <span>{tab.label}</span>
-            </button>
-          ))}
-        </nav>
-
-        <div className="mt-auto p-6 bg-brand-800/50 rounded-[2rem] border border-brand-700">
-          <div className="flex items-center space-x-3 mb-3">
-            <Shield className="text-accent-500" size={16} />
-            <span className="text-xs font-bold text-brand-200 uppercase tracking-tighter">System Health</span>
-          </div>
-          <div className="w-full bg-brand-700 h-1 rounded-full overflow-hidden">
-             <div className="bg-green-400 h-full w-[95%] shadow-[0_0_10px_#4ade80]"></div>
-          </div>
-          <p className="text-[10px] text-brand-400 mt-2">All Nodes Operational</p>
-        </div>
-      </aside>
-
-      {/* Main Content Area */}
-      <main className="flex-grow p-12 overflow-x-hidden">
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex-grow">
         <header className="mb-12 flex justify-between items-end">
           <div>
             <span className="text-brand-500 font-black uppercase text-[10px] tracking-widest mb-1 block">Administrative Dashboard</span>
@@ -231,7 +224,7 @@ const AdminDashboardPage = () => {
                       {data.audit.slice(0, 5).map((log) => (
                         <div key={log.id} className="flex items-start space-x-4 p-4 rounded-2xl bg-neutral-50 border border-neutral-100 italic text-xs text-neutral-600">
                           <History size={16} className="text-brand-300 mt-1 shrink-0" />
-                          <span>{log.first_name} {log.action}: {log.details}</span>
+                          <span>{(log.first_name || 'System')} {log.action}: {log.details}</span>
                         </div>
                       ))}
                     </div>
@@ -241,7 +234,7 @@ const AdminDashboardPage = () => {
                           <div className="space-y-6">
                             <div className="flex items-center justify-between border-b border-brand-800 pb-4">
                               <span className="text-brand-400 text-xs">Unread Messages</span>
-                              <span className="font-bold text-accent-500">{data.contacts.filter(c => c.status === 'unread').length}</span>
+                              <span className="font-bold text-accent-500">{(data.contacts || []).filter(c => c.status === 'unread').length}</span>
                             </div>
                             <div className="flex items-center justify-between border-b border-brand-800 pb-4">
                               <span className="text-brand-400 text-xs">Pending Payments</span>
@@ -262,6 +255,7 @@ const AdminDashboardPage = () => {
                   <thead className="bg-brand-50/50">
                     <tr>
                       <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900">Scholar Details</th>
+                      <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900">Status</th>
                       <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900">Current Role</th>
                       <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900">Manage Role</th>
                       <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900 text-right">Actions</th>
@@ -273,13 +267,30 @@ const AdminDashboardPage = () => {
                         <td className="px-10 py-8">
                           <div className="flex items-center space-x-4">
                              <div className="w-12 h-12 bg-brand-900 text-accent-500 rounded-2xl flex items-center justify-center font-serif font-black text-lg shadow-lg">
-                                {u.first_name.charAt(0)}{u.last_name.charAt(0)}
+                                {(u.first_name || '').charAt(0)}{(u.last_name || '').charAt(0)}
                              </div>
                              <div>
                                 <p className="font-bold text-brand-900">{u.first_name} {u.last_name}</p>
                                 <p className="text-[10px] text-neutral-400 leading-none mt-1">{u.email}</p>
                              </div>
                           </div>
+                        </td>
+                        <td className="px-10 py-8">
+                           <div className="flex flex-col space-y-1">
+                              <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest inline-block text-center border ${
+                                u.is_verified ? 'bg-green-50 text-green-700 border-green-100' : 'bg-amber-50 text-amber-700 border-amber-100'
+                              }`}>
+                                {u.is_verified ? 'Verified' : 'Unverified'}
+                              </span>
+                              {!u.is_verified && (
+                                <button 
+                                  onClick={() => handleVerifyUser(u.id)}
+                                  className="text-[9px] font-black text-brand-800 underline hover:text-accent-600 transition-colors"
+                                >
+                                  Verify Now
+                                </button>
+                              )}
+                           </div>
                         </td>
                         <td className="px-10 py-8">
                            <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${
@@ -304,7 +315,16 @@ const AdminDashboardPage = () => {
                            </select>
                         </td>
                         <td className="px-10 py-8 text-right">
-                           <button className="p-3 text-neutral-300 hover:text-brand-800 transition-colors"><Mail size={20} /></button>
+                           <button 
+                             onClick={() => {
+                               setEditingUser(u);
+                               setUserEditForm({ first_name: u.first_name, last_name: u.last_name, email: u.email, password: '' });
+                               setShowUserEditModal(true);
+                             }}
+                             className="p-3 text-neutral-300 hover:text-brand-800 transition-colors"
+                           >
+                             <Settings size={20} />
+                           </button>
                         </td>
                       </tr>
                     ))}
@@ -431,7 +451,7 @@ const AdminDashboardPage = () => {
                 <div className="flex justify-between items-center mb-8">
                    <h3 className="text-2xl font-serif font-bold text-brand-900 border-l-4 border-accent-500 pl-4">System Announcements</h3>
                    <button 
-                     onClick={() => { setEditingAnn(null); setAnnForm({ title: '', content: '', is_public: true }); setShowAnnModal(true); }}
+                     onClick={() => { setEditingAnn(null); setAnnForm({ title: '', content: '', is_public: true, image_url: '', type: 'general' }); setShowAnnModal(true); }}
                      className="bg-brand-900 text-white px-8 py-4 rounded-2xl font-bold flex items-center space-x-3 shadow-xl hover:bg-brand-800 transition-all"
                    >
                      <Plus size={20} /> <span>New Announcement</span>
@@ -453,7 +473,7 @@ const AdminDashboardPage = () => {
                            </div>
                            <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-all">
                               <button 
-                                onClick={() => { setEditingAnn(a); setAnnForm({ title: a.title, content: a.content, is_public: !!a.is_public }); setShowAnnModal(true); }}
+                                onClick={() => { setEditingAnn(a); setAnnForm({ title: a.title, content: a.content, is_public: !!a.is_public, image_url: a.image_url || '', type: a.type || 'general' }); setShowAnnModal(true); }}
                                 className="p-3 bg-white border border-neutral-100 rounded-xl hover:text-accent-500 transition-colors shadow-sm"
                               >
                                 <Settings size={18} />
@@ -566,6 +586,32 @@ const AdminDashboardPage = () => {
                       placeholder="Draft the official message..."
                     />
                   </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-400">Category / Type</label>
+                      <select 
+                        value={annForm.type || 'general'}
+                        onChange={e => setAnnForm({...annForm, type: e.target.value})}
+                        className="w-full px-6 py-4 bg-neutral-50 border border-neutral-100 rounded-2xl outline-none focus:ring-4 focus:ring-accent-500/10 transition-all font-bold text-brand-900 appearance-none"
+                      >
+                         <option value="general">General Proclamation</option>
+                         <option value="news">Journal News</option>
+                         <option value="call_for_papers">Call for Papers</option>
+                         <option value="editorial">Editorial Notice</option>
+                         <option value="conference">Conference Update</option>
+                         <option value="special_issue">Special Issue Announcement</option>
+                      </select>
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-400">Feature Image URL</label>
+                      <input 
+                        value={annForm.image_url || ''}
+                        onChange={e => setAnnForm({...annForm, image_url: e.target.value})}
+                        className="w-full px-6 py-4 bg-neutral-50 border border-neutral-100 rounded-2xl outline-none focus:ring-4 focus:ring-accent-500/10 transition-all font-bold text-brand-900"
+                        placeholder="https://images.unsplash.com/..."
+                      />
+                    </div>
+                  </div>
                   <div className="flex items-center space-x-4 p-6 bg-neutral-50 rounded-2xl border border-neutral-100">
                     <input 
                       type="checkbox"
@@ -593,7 +639,90 @@ const AdminDashboardPage = () => {
             </div>
           )}
         </AnimatePresence>
-      </main>
+
+        {/* User Edit Modal */}
+        <AnimatePresence>
+          {showUserEditModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-brand-900/40 backdrop-blur-md">
+               <motion.div 
+                 initial={{ opacity: 0, scale: 0.95 }}
+                 animate={{ opacity: 1, scale: 1 }}
+                 exit={{ opacity: 0, scale: 0.95 }}
+                 className="bg-white w-full max-w-lg rounded-[3.5rem] p-12 shadow-2xl relative"
+               >
+                 <div className="mb-10 text-center">
+                   <div className="w-20 h-20 bg-brand-900 text-accent-500 rounded-[2rem] flex items-center justify-center font-serif font-black text-3xl mx-auto mb-6 shadow-xl">
+                      {editingUser?.first_name?.charAt(0) || '?'}
+                   </div>
+                   <h2 className="text-3xl font-serif font-bold text-brand-900">Manage Scholar</h2>
+                   <p className="text-neutral-400 text-[10px] font-black uppercase tracking-widest mt-2">Administrative User Correction</p>
+                 </div>
+
+                 <form onSubmit={handleUpdateUser} className="space-y-6">
+                    <div className="grid grid-cols-2 gap-6">
+                       <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-brand-400 ml-1">First Name</label>
+                          <input 
+                            required
+                            value={userEditForm.first_name}
+                            onChange={e => setUserEditForm({...userEditForm, first_name: e.target.value})}
+                            className="w-full px-6 py-4 bg-neutral-50 border border-neutral-100 rounded-2xl outline-none focus:ring-4 focus:ring-accent-500/10 font-bold text-brand-900"
+                          />
+                       </div>
+                       <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-brand-400 ml-1">Last Name</label>
+                          <input 
+                            required
+                            value={userEditForm.last_name}
+                            onChange={e => setUserEditForm({...userEditForm, last_name: e.target.value})}
+                            className="w-full px-6 py-4 bg-neutral-50 border border-neutral-100 rounded-2xl outline-none focus:ring-4 focus:ring-accent-500/10 font-bold text-brand-900"
+                          />
+                       </div>
+                    </div>
+
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black uppercase tracking-widest text-brand-400 ml-1">Email Address</label>
+                       <input 
+                         required
+                         type="email"
+                         value={userEditForm.email}
+                         onChange={e => setUserEditForm({...userEditForm, email: e.target.value})}
+                         className="w-full px-6 py-4 bg-neutral-50 border border-neutral-100 rounded-2xl outline-none focus:ring-4 focus:ring-accent-500/10 font-bold text-brand-900"
+                       />
+                    </div>
+
+                    <div className="p-6 bg-amber-50 rounded-2xl border border-amber-100">
+                       <div className="flex items-center space-x-3 mb-2">
+                          <AlertCircle size={16} className="text-amber-600" />
+                          <h4 className="text-[10px] font-black uppercase tracking-widest text-amber-700">Security Reset</h4>
+                       </div>
+                       <input 
+                         type="password"
+                         value={userEditForm.password}
+                         onChange={e => setUserEditForm({...userEditForm, password: e.target.value})}
+                         placeholder="Leave blank to keep current password"
+                         className="w-full px-4 py-3 bg-white border border-amber-200 rounded-xl outline-none text-xs"
+                       />
+                    </div>
+
+                    <div className="flex space-x-4 pt-6">
+                       <button type="submit" className="flex-grow py-5 bg-brand-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl hover:bg-brand-800 transition-all">
+                          Update & Notify User
+                       </button>
+                       <button 
+                         type="button" 
+                         onClick={() => setShowUserEditModal(false)}
+                         className="px-8 py-5 bg-neutral-100 text-neutral-500 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-neutral-200 transition-all"
+                       >
+                          Discard
+                       </button>
+                    </div>
+                 </form>
+               </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };

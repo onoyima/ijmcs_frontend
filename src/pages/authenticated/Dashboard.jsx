@@ -4,7 +4,7 @@ import api from '../../api/axiosInstance';
 import { useAuth } from '../../hooks/useAuth';
 import { 
   BookOpen, Clock, CheckCircle, FileText, Plus, ChevronRight, 
-  AlertCircle, CreditCard, Send, Edit3, Eye, Shield, Users 
+  AlertCircle, CreditCard, Send, Edit3, Eye, Shield, Users, Download 
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -23,6 +23,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [submissions, setSubmissions] = useState([]);
   const [reviewTasks, setReviewTasks] = useState([]);
+  const [reviewHistory, setReviewHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,8 +46,12 @@ const Dashboard = () => {
         
         // Reviewer: also load assigned review tasks
         if (user?.role === 'reviewer') {
-          const revRes = await api.get('/api/reviews/pending');
+          const [revRes, histRes] = await Promise.all([
+            api.get('/api/reviews/pending'),
+            api.get('/api/reviews/history')
+          ]);
           setReviewTasks(revRes.data);
+          setReviewHistory(histRes.data);
         }
       } catch (err) {
         console.error('Dashboard data fetch error:', err);
@@ -60,8 +65,7 @@ const Dashboard = () => {
   const isReviewer = user?.role === 'reviewer';
 
   return (
-    <div className="bg-neutral-50 min-h-screen py-12">
-      <div className="container mx-auto px-4 max-w-6xl">
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
         {/* Welcome Header */}
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -78,15 +82,55 @@ const Dashboard = () => {
             </p>
           </div>
           {/* Only Authors can submit — not reviewers */}
-          {!isReviewer && (
             <Link
               to="/submit"
               className="bg-brand-800 hover:bg-brand-700 text-white px-8 py-4 rounded-2xl font-bold flex items-center space-x-3 transition-all shadow-xl hover:-translate-y-1"
             >
               <Plus size={20} /> <span>New Submission</span>
             </Link>
-          )}
         </header>
+        
+        {/* Statistics Bar (Universal) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-brand-50 flex items-center space-x-4">
+                 <div className="w-12 h-12 bg-brand-50 text-brand-700 rounded-2xl flex items-center justify-center font-bold">
+                    <FileText size={20} />
+                 </div>
+                 <div>
+                    <div className="text-2xl font-serif font-black text-brand-900">{submissions.length}</div>
+                    <div className="text-[9px] font-black uppercase tracking-widest text-neutral-400">My Uploads</div>
+                 </div>
+            </div>
+            {isReviewer && (
+              <div className="bg-white p-6 rounded-3xl shadow-sm border border-brand-50 flex items-center space-x-4">
+                 <div className="w-12 h-12 bg-accent-50 text-accent-600 rounded-2xl flex items-center justify-center font-bold">
+                    <Clock size={20} />
+                 </div>
+                 <div>
+                    <div className="text-2xl font-serif font-black text-brand-900">{reviewTasks.length}</div>
+                    <div className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Pending Reviews</div>
+                 </div>
+              </div>
+            )}
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-brand-50 flex items-center space-x-4">
+                 <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center font-bold">
+                    <CreditCard size={20} />
+                 </div>
+                 <div>
+                    <div className="text-2xl font-serif font-black text-brand-900">{submissions.filter(s => s.status === 'pending_payment').length}</div>
+                    <div className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Unpaid Fees</div>
+                 </div>
+            </div>
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-brand-50 flex items-center space-x-4">
+                 <div className="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center font-bold">
+                    <CheckCircle size={20} />
+                 </div>
+                 <div>
+                    <div className="text-2xl font-serif font-black text-brand-900">{submissions.filter(s => s.status === 'published').length}</div>
+                    <div className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Published</div>
+                 </div>
+            </div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Main Content */}
@@ -188,13 +232,42 @@ const Dashboard = () => {
                         </div>
 
                         <div className="flex items-center space-x-4">
-                          {/* Resume payment if draft */}
+                          {/* Receipt Download if Paid */}
+                          {sub.is_paid && (
+                            <a
+                              href={`${api.defaults.baseURL}/api/payments/receipt/${sub.payment_reference || sub.id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center text-xs font-bold text-green-600 hover:text-green-800"
+                              onClick={(e) => {
+                                // If we don't have a specific reference in the sub object, 
+                                // we might need to fetch it or use a different endpoint.
+                                // But for now, using a placeholder logic.
+                                if (!sub.payment_reference) {
+                                   // toast.error('Receipt reference not found');
+                                   // e.preventDefault();
+                                }
+                              }}
+                            >
+                              <Download size={14} className="mr-1" /> Receipt
+                            </a>
+                          )}
+                          {/* Resume/Continue if draft */}
                           {isDraft && (
+                            <Link
+                              to={`/submit?resume=${sub.id}&step=2`}
+                              className="flex items-center text-xs font-bold text-amber-600 hover:text-amber-800"
+                            >
+                              <Edit3 size={14} className="mr-1" /> Continue
+                            </Link>
+                          )}
+                          {/* Resume payment if draft AND not paid */}
+                          {isDraft && !sub.is_paid && (
                             <Link
                               to={`/payment/${sub.id}`}
                               className="flex items-center text-xs font-bold text-amber-600 hover:text-amber-800"
                             >
-                              <CreditCard size={14} className="mr-1" /> Complete Payment
+                              <CreditCard size={14} className="mr-1" /> Pay APC
                             </Link>
                           )}
                           {/* Upload revision if requested */}
@@ -267,7 +340,6 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 };

@@ -56,8 +56,7 @@ const IssueManagementPage = () => {
   };
 
   return (
-    <div className="bg-neutral-50 min-h-screen py-12">
-      <div className="container mx-auto px-4 max-w-6xl">
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <header className="mb-12 flex items-center justify-between">
            <div>
               <h1 className="text-3xl font-serif font-bold text-brand-900 border-l-4 border-accent-500 pl-4">Issue Management</h1>
@@ -159,7 +158,6 @@ const IssueManagementPage = () => {
              </motion.div>
           </div>
         )}
-      </div>
     </div>
   );
 };

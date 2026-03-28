@@ -38,6 +38,10 @@ const EditorSubmissionDetailPage = () => {
         // Fetch all published issues for the publish dropdown
         const { data: issuesData } = await api.get('/api/issues');
         setIssues(issuesData);
+
+        // Fetch assigned reviews for this submission
+        const { data: reviewsData } = await api.get(`/api/reviews/submission/${id}`);
+        setReviewers(reviewsData);
       } catch (err) {
         toast.error('Failed to load submission');
         navigate('/editor/control');
@@ -98,8 +102,7 @@ const EditorSubmissionDetailPage = () => {
   if (loading) return <div className="py-40 text-center animate-pulse text-brand-800 font-serif text-3xl">Loading Submission...</div>;
 
   return (
-    <div className="bg-neutral-50 min-h-screen py-16">
-      <div className="container mx-auto px-4 max-w-6xl">
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Main Info */}
           <div className="lg:col-span-8 space-y-8">
@@ -126,7 +129,12 @@ const EditorSubmissionDetailPage = () => {
                 </section>
 
                 <div className="flex space-x-4">
-                   <a href={submission.file_path} target="_blank" rel="noreferrer" className="flex items-center px-6 py-3 bg-brand-800 text-white rounded-xl font-bold text-sm hover:bg-brand-700 transition-all">
+                   <a 
+                     href={`${import.meta.env.VITE_API_URL}${submission.file_path}`} 
+                     target="_blank" 
+                     rel="noreferrer" 
+                     className="flex items-center px-6 py-3 bg-brand-800 text-white rounded-xl font-bold text-sm hover:bg-brand-700 transition-all shadow-lg"
+                   >
                       <Download size={18} className="mr-2" /> Download Manuscript
                    </a>
                 </div>
@@ -243,13 +251,45 @@ const EditorSubmissionDetailPage = () => {
           <div className="lg:col-span-4 space-y-8">
              <div className="bg-brand-900 p-10 rounded-[2.5rem] text-white shadow-2xl">
                 <h3 className="text-xl font-serif font-bold mb-6">Reviewer Activity</h3>
-                <div className="space-y-4">
-                   <p className="text-xs text-brand-300 italic">No reviewers currently assigned to this manuscript.</p>
+                <div className="space-y-6">
+                   {reviewers.length === 0 ? (
+                      <p className="text-xs text-brand-300 italic">No reviewers currently assigned to this manuscript.</p>
+                   ) : reviewers.map((rev) => (
+                      <div key={rev.id} className="p-6 bg-brand-800/50 rounded-3xl border border-brand-700/50">
+                         <div className="flex justify-between items-start mb-4">
+                            <div>
+                               <p className="font-bold text-sm">{rev.first_name} {rev.last_name}</p>
+                               <p className="text-[10px] text-brand-400">{rev.email}</p>
+                            </div>
+                            <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                               rev.status === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'
+                            }`}>
+                               {rev.status}
+                            </span>
+                         </div>
+                         
+                         {rev.status === 'completed' && (
+                            <div className="space-y-3 pt-3 border-t border-brand-700/50">
+                               <p className="text-[10px] font-black uppercase text-accent-400">Recommendation: {rev.recommendation.replace('_', ' ')}</p>
+                               <div className="grid grid-cols-2 gap-2">
+                                  {rev.scores_json && Object.entries(typeof rev.scores_json === 'string' ? JSON.parse(rev.scores_json) : rev.scores_json).map(([k, v]) => (
+                                     <div key={k} className="flex justify-between text-[9px]">
+                                        <span className="text-brand-400 capitalize">{k}:</span>
+                                        <span className="font-bold">{v}/10</span>
+                                     </div>
+                                  ))}
+                               </div>
+                               <div className="bg-brand-900/50 p-3 rounded-xl mt-2">
+                                  <p className="text-[10px] text-brand-200 leading-relaxed line-clamp-3 italic">"{rev.comments_to_editor}"</p>
+                               </div>
+                            </div>
+                         )}
+                      </div>
+                   ))}
                 </div>
              </div>
           </div>
         </div>
-      </div>
     </div>
   );
 };

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../api/axiosInstance';
-import { User, Shield, BookOpen, MapPin, AtSign, Globe, Lock, Save, Camera, CheckCircle, RefreshCw } from 'lucide-react';
+import { User, Shield, BookOpen, MapPin, AtSign, Globe, Lock, Save, Camera, CheckCircle, RefreshCw, AlertCircle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import PageLoader from '../../components/common/PageLoader';
 
 const ProfileSettingsPage = () => {
   const [activeTab, setActiveTab] = useState('profile');
@@ -58,15 +59,10 @@ const ProfileSettingsPage = () => {
     }
   };
 
-  if (loading) return (
-    <div className="py-40 text-center animate-pulse text-brand-800 font-serif text-2xl">
-      Consulting the User Ledger...
-    </div>
-  );
+  if (loading) return <PageLoader />;
 
   return (
-    <div className="bg-neutral-50 min-h-screen py-20">
-      <div className="container mx-auto px-4 max-w-5xl">
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <header className="mb-16 flex flex-col items-center text-center">
             <div className="relative group mb-8">
                <div className="w-32 h-32 bg-brand-900 border-4 border-white shadow-2xl rounded-[2.5rem] flex items-center justify-center text-white overflow-hidden relative">
@@ -287,7 +283,6 @@ const ProfileSettingsPage = () => {
                </AnimatePresence>
             </div>
         </div>
-      </div>
     </div>
   );
 };

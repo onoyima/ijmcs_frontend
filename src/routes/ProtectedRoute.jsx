@@ -1,12 +1,13 @@
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import PageLoader from '../components/common/PageLoader';
 
 const ProtectedRoute = () => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <PageLoader />;
 
   return user ? (
     <Outlet />

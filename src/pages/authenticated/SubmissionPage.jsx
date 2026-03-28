@@ -32,15 +32,38 @@ const SubmissionPage = () => {
   // On mount: check for resume from payment callback, or load localStorage draft
   useEffect(() => {
     if (resumeId) {
-      // User is returning from Paystack payment — skip to upload step
+      // User is returning from Paystack payment or resuming a draft
       setSubmissionId(resumeId);
-      setStep(resumeStep);
-      // Restore metadata from local draft if available
-      const saved = localStorage.getItem(DRAFT_KEY);
-      if (saved) {
-        try { setFormData(JSON.parse(saved).formData || {}); } catch {}
-      }
-      toast.success('Payment verified! Please upload your manuscript.');
+      
+      const fetchStatus = async () => {
+        try {
+          const { data } = await api.get(`/api/submissions/my-submissions`);
+          const current = data.find(s => s.id === parseInt(resumeId));
+          if (current) {
+             setFormData({
+               title: current.title,
+               abstract: current.abstract,
+               keywords: current.keywords,
+               discipline: current.discipline
+             });
+             // Only editable if draft (pending_payment) or requested for revision
+             const editable = ['pending_payment', 'revision_required'].includes(current.status);
+             setIsReadOnly(!editable);
+             
+             // If they already paid, go to Step 3
+             if (current.is_paid || current.status !== 'pending_payment') {
+               setStep(3);
+             } else {
+               setStep(resumeStep);
+             }
+          }
+        } catch (err) {
+          console.error('Failed to fetch submission status:', err);
+        }
+      };
+      
+      fetchStatus();
+      if (resumeStep === 3) toast.success('Payment verified! Please upload your manuscript.');
     } else {
       // Check for local draft saved before
       const saved = localStorage.getItem(DRAFT_KEY);
@@ -182,8 +205,7 @@ const SubmissionPage = () => {
   ];
 
   return (
-    <div className="bg-neutral-50 min-h-screen py-20">
-      <div className="container mx-auto px-4 max-w-4xl">
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
         
         {/* Draft Resume Banner */}
         <AnimatePresence>
@@ -492,7 +514,6 @@ const SubmissionPage = () => {
             )}
           </AnimatePresence>
         </section>
-      </div>
     </div>
   );
 };

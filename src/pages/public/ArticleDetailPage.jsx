@@ -25,7 +25,8 @@ const ArticleDetailPage = () => {
   }, [id]);
 
   const copyCitation = () => {
-    const citation = `${article.last_name}, ${article.first_name.charAt(0)}. (${article.year}). ${article.title}. Igniting Journal of Multidisciplinary and Contemporary Studies, ${article.volume}(${article.number}), ${article.page_start}-${article.page_end}.`;
+    if (!article) return;
+    const citation = `${article.last_name || ''}, ${article.first_name?.charAt(0) || ''}. (${article.year || new Date(article.published_at).getFullYear()}). ${article.title}. Igniting Journal of Multidisciplinary and Contemporary Studies, ${article.volume || ''}(${article.number || ''}), ${article.page_start || ''}-${article.page_end || ''}.`;
     navigator.clipboard.writeText(citation);
     toast.success('Citation copied to clipboard (APA Style)');
   };
@@ -84,7 +85,7 @@ const ArticleDetailPage = () => {
                 <section>
                    <h2 className="text-sm font-bold text-brand-900 uppercase tracking-widest mb-4">Keywords</h2>
                    <div className="flex flex-wrap gap-2">
-                      {article.keywords.split(',').map((kw, i) => (
+                      {article.keywords?.split(',').map((kw, i) => (
                         <span key={i} className="px-4 py-2 bg-neutral-50 border border-neutral-100 rounded-xl text-xs text-neutral-500 font-medium">
                           {kw.trim()}
                         </span>

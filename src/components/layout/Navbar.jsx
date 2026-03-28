@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { Menu, X, ChevronDown, User, LogOut, LayoutDashboard, Send, BookOpen, ShieldCheck, Info, Users, FileText, Gavel, CreditCard, Wallet, Unlock, Award } from 'lucide-react';
+import { Menu, X, ChevronDown, User, LogOut, LayoutDashboard, Send, BookOpen, ShieldCheck, Info, Users, FileText, Scale, CreditCard, Unlock, Award } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
@@ -43,9 +43,9 @@ const Navbar = () => {
 
   const policyLinks = [
     { name: 'Author Guidelines', path: '/instructions', icon: <FileText size={16} /> },
-    { name: 'Publication Ethics', path: '/ethics', icon: <Gavel size={16} /> },
+    { name: 'Publication Ethics', path: '/ethics', icon: <Scale size={16} /> },
     { name: 'APC Policy', path: '/apc-policy', icon: <CreditCard size={16} /> },
-    { name: 'How to Pay', path: '/how-to-pay', icon: <Wallet size={16} /> },
+    { name: 'How to Pay', path: '/how-to-pay', icon: <CreditCard size={16} /> },
     { name: 'Open Access', path: '/open-access', icon: <Unlock size={16} /> },
     { name: 'Privacy Policy', path: '/privacy', icon: <ShieldCheck size={16} /> },
   ];
@@ -57,8 +57,8 @@ const Navbar = () => {
 
   return (
     <nav className="bg-brand-900 border-b border-brand-800 text-white sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-24">
+      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 md:h-24">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-4 group">
             <div className="relative">
@@ -69,9 +69,9 @@ const Navbar = () => {
               />
               <div className="absolute -inset-1 bg-accent-500 opacity-20 blur-lg rounded-xl group-hover:opacity-40 transition-opacity"></div>
             </div>
-            <div className="hidden md:block">
-              <span className="block text-2xl font-serif font-black tracking-tighter leading-none">IJMCS</span>
-              <span className="block text-[8px] text-accent-500 uppercase font-black tracking-[0.3em] mt-1">Igniting Multidisciplinary Journal</span>
+            <div className="hidden xs:block md:block">
+              <span className="block text-xl md:text-2xl font-serif font-black tracking-tighter leading-none">IJMCS</span>
+              <span className="block text-[7px] md:text-[8px] text-accent-500 uppercase font-black tracking-[0.2em] md:tracking-[0.3em] mt-1">Igniting Multidisciplinary Journal</span>
             </div>
           </Link>
 
@@ -176,9 +176,9 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-3 bg-white/5 rounded-2xl text-brand-100"
+            className="lg:hidden p-2 md:p-3 bg-white/5 rounded-xl md:rounded-2xl text-brand-100"
           >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>

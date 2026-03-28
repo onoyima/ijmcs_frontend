@@ -36,6 +36,10 @@ import ProfileSettingsPage from '../pages/authenticated/ProfileSettingsPage';
 import PaymentCallbackPage from '../pages/authenticated/PaymentCallbackPage';
 import HowToPayPage from '../pages/public/HowToPayPage';
 import EditorInChiefPage from '../pages/public/EditorInChiefPage';
+import PublicAnnouncementsPage from '../pages/public/PublicAnnouncementsPage';
+import SubmissionDetailPage from '../pages/authenticated/SubmissionDetailPage';
+import AnnouncementDetailPage from '../pages/public/AnnouncementDetailPage';
+import DashboardLayout from '../components/layout/DashboardLayout';
 
 const AppRouter = () => (
   <Routes>
@@ -63,28 +67,33 @@ const AppRouter = () => (
     <Route path="/verify-email" element={<VerifyEmailPage />} />
     <Route path="/how-to-pay" element={<HowToPayPage />} />
     <Route path="/editor-in-chief" element={<EditorInChiefPage />} />
+    <Route path="/announcements" element={<PublicAnnouncementsPage />} />
+    <Route path="/announcements/:id" element={<AnnouncementDetailPage />} />
     
-    {/* Protected Routes */}
+    {/* Protected Routes (Authenticated) */}
     <Route element={<ProtectedRoute />}>
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/submit"    element={<SubmissionPage />} />
-      <Route path="/review/:id" element={<ReviewPage />} />
-      <Route path="/payment/:id" element={<PaymentPage />} />
-      <Route path="/payment-callback" element={<PaymentCallbackPage />} />
-      
-      {/* Editor Only */}
-      <Route element={<RoleRoute roles={['editor']} />}>
-        <Route path="/editor/control" element={<EditorControlPage />} />
-        <Route path="/editor/submission/:id" element={<EditorSubmissionDetailPage />} />
-        <Route path="/editor/issues" element={<IssueManagementPage />} />
-      </Route>
-      
-      {/* Role-Specific Examples */}
-      <Route element={<RoleRoute roles={['admin']} />}>
-        <Route path="/admin" element={<AdminDashboardPage />} />
-      </Route>
+      <Route element={<DashboardLayout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/submit"    element={<SubmissionPage />} />
+        <Route path="/review/:id" element={<ReviewPage />} />
+        <Route path="/payment/:id" element={<PaymentPage />} />
+        <Route path="/payment-callback" element={<PaymentCallbackPage />} />
+        <Route path="/submission/:id" element={<SubmissionDetailPage />} />
+        
+        {/* Editor Only */}
+        <Route element={<RoleRoute roles={['editor', 'admin']} />}>
+          <Route path="/editor/control" element={<EditorControlPage />} />
+          <Route path="/editor/submission/:id" element={<EditorSubmissionDetailPage />} />
+          <Route path="/editor/issues" element={<IssueManagementPage />} />
+        </Route>
+        
+        {/* Admin Only */}
+        <Route element={<RoleRoute roles={['admin']} />}>
+          <Route path="/admin" element={<AdminDashboardPage />} />
+        </Route>
 
-      <Route path="/profile" element={<ProfileSettingsPage />} />
+        <Route path="/profile" element={<ProfileSettingsPage />} />
+      </Route>
     </Route>
 
     {/* Fallback */}

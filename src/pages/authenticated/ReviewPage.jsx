@@ -53,8 +53,7 @@ const ReviewPage = () => {
   if (loading) return <div className="py-40 text-center animate-pulse text-brand-800 font-serif text-3xl">Loading Assignment...</div>;
 
   return (
-    <div className="bg-neutral-50 min-h-screen py-16">
-      <div className="container mx-auto px-4 max-w-5xl">
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <header className="mb-12">
            <span className="text-[10px] bg-accent-100 text-accent-700 px-3 py-1 rounded-full font-bold uppercase tracking-widest mb-4 inline-block">Reviewer Portal</span>
            <h1 className="text-4xl font-serif font-bold text-brand-900 mb-4">{assignment.title}</h1>
@@ -70,9 +69,14 @@ const ReviewPage = () => {
                  <p className="text-xs text-neutral-500 leading-relaxed italic border-l-2 border-brand-100 pl-4">
                     {assignment.abstract}
                  </p>
-                 <button className="w-full mt-8 py-4 bg-brand-800 text-white rounded-2xl font-bold flex items-center justify-center space-x-2 hover:bg-brand-700 transition-all">
+                 <a 
+                    href={`${import.meta.env.VITE_API_URL}${assignment.file_path}`} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="w-full mt-8 py-4 bg-brand-800 text-white rounded-2xl font-bold flex items-center justify-center space-x-2 hover:bg-brand-700 transition-all shadow-lg"
+                 >
                     <Download size={18} /> <span>Download Manuscript</span>
-                 </button>
+                 </a>
               </div>
            </div>
 
@@ -154,7 +158,6 @@ const ReviewPage = () => {
               </form>
            </div>
         </div>
-      </div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { BookOpen, Search, Bell, Users, Globe, Award, ChevronRight, Zap } from 'lucide-react';
+import { BookOpen, Search, Bell, Users, Globe, Award, ChevronRight, Zap, Newspaper } from 'lucide-react';
 
 // Branding Asset Links
 const HERO_PATH = '/images/hero_academic_research_1774477934515.png';
@@ -189,7 +189,55 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Final CTA */}
+      {/* Announcements Section */}
+      <section className="py-24 bg-white border-y border-brand-100">
+         <div className="container mx-auto px-4">
+            <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
+               <div className="max-w-2xl">
+                  <span className="text-accent-500 font-bold uppercase tracking-widest text-[10px] mb-4 block underline decoration-accent-500/30 decoration-4 underline-offset-8">Journal Updates</span>
+                  <h2 className="text-4xl md:text-5xl font-serif font-bold text-brand-900 leading-tight">Latest Announcements</h2>
+               </div>
+               <Link to="/announcements" className="flex items-center text-sm font-bold text-brand-700 hover:text-accent-500 transition-colors">
+                  View All News <ChevronRight size={18} className="ml-1" />
+               </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+               <motion.div 
+                 initial={{ opacity: 0, x: -20 }}
+                 whileInView={{ opacity: 1, x: 0 }}
+                 viewport={{ once: true }}
+                 className="p-10 bg-brand-50 rounded-[3rem] border border-brand-100 group transition-all hover:bg-white hover:shadow-2xl hover:border-accent-100"
+               >
+                  <div className="flex items-center space-x-3 mb-6">
+                     <Bell className="text-accent-500" size={24} />
+                     <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Featured Notice</span>
+                  </div>
+                  <h3 className="text-2xl font-serif font-bold text-brand-900 mb-4">Call for Papers: Volume 8, Issue 2</h3>
+                  <p className="text-sm text-neutral-500 leading-relaxed mb-8">We are now accepting submissions for the upcoming December issue. Focus areas include sustainable development, pedagogical innovation, and digital transformation.</p>
+                  <Link to="/announcements" className="text-xs font-black uppercase text-accent-500 flex items-center group-hover:translate-x-2 transition-transform">Read Details <ChevronRight size={14} className="ml-1" /></Link>
+               </motion.div>
+
+               <div className="space-y-6">
+                  {[
+                    { date: 'Oct 12, 2025', title: 'New Editorial Board Members Appointed' },
+                    { date: 'Sep 28, 2025', title: 'IJMCS achieves Crossref Indexing milestone' }
+                  ].map((item, i) => (
+                     <Link key={i} to="/announcements" className="flex items-center p-6 bg-white rounded-2xl border border-brand-50 hover:border-accent-200 transition-all hover:shadow-lg group">
+                        <div className="w-12 h-12 bg-neutral-50 rounded-xl flex items-center justify-center text-brand-200 mr-6 group-hover:bg-accent-50 group-hover:text-accent-500 transition-colors">
+                           <Newspaper size={20} />
+                        </div>
+                        <div>
+                           <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1">{item.date}</p>
+                           <h4 className="font-serif font-bold text-brand-900 text-lg">{item.title}</h4>
+                        </div>
+                        <ChevronRight className="ml-auto text-neutral-200 group-hover:text-accent-500" size={20} />
+                     </Link>
+                  ))}
+               </div>
+            </div>
+         </div>
+      </section>
       <section className="py-40 bg-brand-900 text-white relative overflow-hidden">
          <div className="absolute inset-0 z-0">
             <img src="/images/research-abstract.png" alt="Abstract Research" className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-screen" />
