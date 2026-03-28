@@ -104,7 +104,7 @@ const EditorControlPage = () => {
                             </span>
                          </td>
                          <td className="px-8 py-8 text-xs text-neutral-400">
-                            {new Date(sub.created_at).toLocaleDateString()}
+                            {new Date(sub.submitted_at).toLocaleDateString()}
                          </td>
                          <td className="px-8 py-8 text-right">
                             <div className="flex items-center justify-end space-x-4">

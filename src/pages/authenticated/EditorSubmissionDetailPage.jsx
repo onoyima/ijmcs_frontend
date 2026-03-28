@@ -117,7 +117,7 @@ const EditorSubmissionDetailPage = () => {
                 
                 <div className="flex flex-wrap gap-6 mb-10 pb-10 border-b border-neutral-100 italic text-neutral-500 text-sm">
                    <div className="flex items-center"><User size={16} className="mr-2" /> {submission.author_first} {submission.author_last}</div>
-                   <div className="flex items-center"><Calendar size={16} className="mr-2" /> Submitted {new Date(submission.created_at).toLocaleDateString()}</div>
+                   <div className="flex items-center"><Calendar size={16} className="mr-2" /> Submitted {new Date(submission.submitted_at).toLocaleDateString()}</div>
                 </div>
 
                 <section className="mb-10">

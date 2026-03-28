@@ -4,7 +4,7 @@ import api from '../../api/axiosInstance';
 import { 
   Users, FileText, CheckCircle, Settings, Search, TrendingUp, 
   Shield, Mail, CreditCard, History, MessageSquare, Save, 
-  ChevronRight, AlertCircle, RefreshCw, BookOpen
+  ChevronRight, AlertCircle, RefreshCw, BookOpen, Plus, Trash2, ShieldCheck
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -27,29 +27,42 @@ const AdminDashboardPage = () => {
 
   const fetchDashData = async () => {
     setLoading(true);
-    try {
-      const [statsRes, usersRes, paymentsRes, auditRes, contactsRes, announcementsRes] = await Promise.all([
-        api.get('/api/admin/stats'),
-        api.get('/api/admin/users'),
-        api.get('/api/admin/payments'),
-        api.get('/api/admin/audit-logs'),
-        api.get('/api/admin/contacts'),
-        api.get('/api/announcements')
-      ]);
-      setStats(statsRes.data);
-      setData({
-        users: usersRes.data,
-        payments: paymentsRes.data,
-        audit: auditRes.data,
-        contacts: contactsRes.data,
-        announcements: announcementsRes.data
-      });
-      // Optionally fetch APC from settings if we have a specific endpoint, or use stats
-    } catch (err) {
-      toast.error('Failed to synchronize administrative data');
-    } finally {
-      setLoading(false);
+    const endpoints = {
+      stats: '/api/admin/stats',
+      users: '/api/admin/users',
+      payments: '/api/admin/payments',
+      audit: '/api/admin/audit-logs',
+      contacts: '/api/admin/contacts',
+      announcements: '/api/announcements'
+    };
+
+    const results = {};
+    let errorCount = 0;
+
+    await Promise.all(Object.entries(endpoints).map(async ([key, url]) => {
+      try {
+        const { data } = await api.get(url);
+        results[key] = data;
+      } catch (err) {
+        console.error(`Failed to fetch ${key}:`, err.response?.status || err.message);
+        errorCount++;
+      }
+    }));
+
+    if (results.stats) setStats(results.stats);
+    
+    setData(prev => ({
+      users: results.users || prev.users,
+      payments: results.payments || prev.payments,
+      audit: results.audit || prev.audit,
+      contacts: results.contacts || prev.contacts,
+      announcements: results.announcements || prev.announcements
+    }));
+
+    if (errorCount > 0) {
+      toast.error(`Dashboard partially synchronized (${Object.keys(results).length}/${Object.keys(endpoints).length} modules active)`);
     }
+    setLoading(false);
   };
 
   const handleRoleChange = async (userId, newRole) => {
@@ -73,12 +86,17 @@ const AdminDashboardPage = () => {
 
   const handleSaveAnnouncement = async (e) => {
     e.preventDefault();
+    console.log('📢 handleSaveAnnouncement triggered', { editingAnn, annForm });
     try {
       if (editingAnn) {
-        await api.put(`/api/announcements/${editingAnn.id}`, annForm);
+        console.log('📝 Updating announcement...', editingAnn.id);
+        const res = await api.put(`/api/announcements/${editingAnn.id}`, annForm);
+        console.log('✅ Update response:', res.data);
         toast.success('Announcement updated');
       } else {
-        await api.post('/api/announcements', annForm);
+        console.log('🆕 Creating new announcement...', annForm);
+        const res = await api.post('/api/announcements', annForm);
+        console.log('✅ Create response:', res.data);
         toast.success('Announcement created');
       }
       setShowAnnModal(false);
@@ -86,7 +104,8 @@ const AdminDashboardPage = () => {
       setAnnForm({ title: '', content: '', is_public: true });
       fetchDashData();
     } catch (err) {
-      toast.error('Operation failed');
+      console.error('❌ Announcement operation failed:', err.response?.data || err.message);
+      toast.error(err.response?.data?.message || 'Operation failed');
     }
   };
 

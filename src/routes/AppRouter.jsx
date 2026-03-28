@@ -33,6 +33,7 @@ import IssueManagementPage from '../pages/authenticated/IssueManagementPage';
 import PaymentPage from '../pages/authenticated/PaymentPage';
 import AdminDashboardPage from '../pages/authenticated/AdminDashboardPage';
 import ProfileSettingsPage from '../pages/authenticated/ProfileSettingsPage';
+import PaymentCallbackPage from '../pages/authenticated/PaymentCallbackPage';
 import HowToPayPage from '../pages/public/HowToPayPage';
 import EditorInChiefPage from '../pages/public/EditorInChiefPage';
 
@@ -69,6 +70,7 @@ const AppRouter = () => (
       <Route path="/submit"    element={<SubmissionPage />} />
       <Route path="/review/:id" element={<ReviewPage />} />
       <Route path="/payment/:id" element={<PaymentPage />} />
+      <Route path="/payment-callback" element={<PaymentCallbackPage />} />
       
       {/* Editor Only */}
       <Route element={<RoleRoute roles={['editor']} />}>
