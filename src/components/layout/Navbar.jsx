@@ -173,13 +173,21 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 md:p-3 bg-white/5 rounded-xl md:rounded-2xl text-brand-100"
-          >
-            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          {/* Mobile Actions & Menu Button */}
+          <div className="lg:hidden flex items-center space-x-3">
+            {!user && (
+              <div className="flex items-center space-x-2 mr-1">
+                <Link to="/login" className="px-4 py-2 bg-white/5 text-[10px] font-black uppercase tracking-widest rounded-xl border border-white/10 hover:bg-white/10 transition-all">Login</Link>
+                <Link to="/register" className="px-4 py-2 bg-accent-500 text-brand-900 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-accent-500/20 active:scale-95 transition-all">Join</Link>
+              </div>
+            )}
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2.5 md:p-3 bg-white/5 rounded-xl md:rounded-2xl text-brand-100 hover:bg-white/10"
+            >
+              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
       </div>
 

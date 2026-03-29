@@ -74,9 +74,9 @@ const DashboardLayout = () => {
       {/* Mobile Toggle */}
       <button 
         onClick={() => setIsSidebarOpen(true)}
-        className="lg:hidden fixed bottom-6 right-6 z-50 p-4 bg-brand-900 text-white rounded-full shadow-2xl"
+        className="lg:hidden fixed top-4 left-4 z-[45] p-3 bg-brand-900 text-white rounded-xl shadow-2xl border border-brand-800 active:scale-95 transition-all"
       >
-        <Menu size={24} />
+        <Menu size={20} />
       </button>
 
       {/* Sidebar - Desktop */}
