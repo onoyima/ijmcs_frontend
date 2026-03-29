@@ -8,6 +8,7 @@ const IssueManagementPage = () => {
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   
   const [formData, setFormData] = useState({
     volume: '',
@@ -31,17 +32,36 @@ const IssueManagementPage = () => {
 
   useEffect(() => { fetchIssues(); }, []);
 
-  const handleCreate = async (e) => {
+  const handleCreateOrUpdate = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/api/admin/issues', formData);
-      toast.success('Issue draft created');
+      if (editingId) {
+        await api.patch(`/api/admin/issues/${editingId}`, formData);
+        toast.success('Issue updated successfully');
+      } else {
+        await api.post('/api/admin/issues', formData);
+        toast.success('Issue draft created');
+      }
       setShowModal(false);
+      setEditingId(null);
       fetchIssues();
       setFormData({ volume: '', issue_number: '', year: new Date().getFullYear(), title: '', description: '', cover_image_url: '' });
     } catch (err) {
-      toast.error('Failed to create issue');
+      toast.error('Failed to save issue configuration');
     }
+  };
+
+  const openEditor = (issue) => {
+    setFormData({
+      volume: issue.volume || '',
+      issue_number: issue.issue_number || '',
+      year: issue.year || new Date().getFullYear(),
+      title: issue.title || '',
+      description: issue.description || '',
+      cover_image_url: issue.cover_image_url || ''
+    });
+    setEditingId(issue.id);
+    setShowModal(true);
   };
 
   const handlePublish = async (id, currentStatus) => {
@@ -83,7 +103,11 @@ const IssueManagementPage = () => {
               <p className="text-sm text-neutral-500 mt-1">Configure volumes and set the active target for author submissions.</p>
            </div>
            <button 
-             onClick={() => setShowModal(true)}
+             onClick={() => {
+                setEditingId(null);
+                setFormData({ volume: '', issue_number: '', year: new Date().getFullYear(), title: '', description: '', cover_image_url: '' });
+                setShowModal(true);
+             }}
              className="bg-brand-800 text-white px-8 py-4 rounded-2xl font-bold flex items-center space-x-3 shadow-xl hover:bg-brand-700 transition-all"
            >
              <Plus size={20} /> <span>Create New Issue</span>
@@ -136,6 +160,9 @@ const IssueManagementPage = () => {
                         >
                           {issue.published ? 'Unpublish' : 'Publish'}
                         </button>
+                        <button onClick={() => openEditor(issue)} className="p-3 bg-blue-50 text-blue-500 rounded-xl hover:bg-blue-100 hover:text-blue-600 transition-colors">
+                           <Book size={18} />
+                        </button>
                         <button onClick={() => handleDelete(issue.id)} className="p-3 bg-neutral-50 text-neutral-400 rounded-xl hover:bg-red-50 hover:text-red-500 transition-colors">
                            <Trash2 size={18} />
                         </button>
@@ -161,8 +188,8 @@ const IssueManagementPage = () => {
                animate={{ opacity: 1, scale: 1 }}
                className="bg-white w-full max-w-xl rounded-[3rem] p-10 md:p-14 shadow-2xl relative"
              >
-                <h2 className="text-2xl font-serif font-bold text-brand-900 mb-8">New Issue Configuration</h2>
-                <form onSubmit={handleCreate} className="space-y-6">
+                <h2 className="text-2xl font-serif font-bold text-brand-900 mb-8">{editingId ? 'Edit Issue Configuration' : 'New Issue Configuration'}</h2>
+                <form onSubmit={handleCreateOrUpdate} className="space-y-6">
                    <div className="grid grid-cols-2 gap-6">
                       <input 
                         type="number"
@@ -201,9 +228,11 @@ const IssueManagementPage = () => {
                      value={formData.cover_image_url}
                      onChange={(e) => setFormData({...formData, cover_image_url: e.target.value})}
                    />
-                   <div className="flex gap-4">
-                      <button type="submit" className="flex-grow py-4 bg-brand-800 text-white rounded-2xl font-bold shadow-xl">Create Draft</button>
-                      <button type="button" onClick={() => setShowModal(false)} className="px-8 py-4 bg-neutral-50 rounded-2xl font-bold hover:bg-neutral-100">Cancel</button>
+                   <div className="flex space-x-4 pt-4">
+                      <button type="submit" className="flex-grow py-4 bg-brand-900 text-white font-bold rounded-xl shadow-xl hover:opacity-90 flex items-center justify-center">
+                         {editingId ? 'Save Changes' : 'Initialize Infrastructure'}
+                      </button>
+                      <button type="button" onClick={() => setShowModal(false)} className="px-8 py-4 bg-neutral-100 font-bold rounded-xl hover:bg-neutral-200 text-neutral-600">Cancel</button>
                    </div>
                 </form>
              </motion.div>

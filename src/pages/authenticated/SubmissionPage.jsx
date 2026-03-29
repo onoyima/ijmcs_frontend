@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../api/axiosInstance';
-import { Upload, FileText, CheckCircle, ArrowRight, ArrowLeft, Loader2, Info, CreditCard, ShieldCheck, RefreshCw, Edit3, Lock } from 'lucide-react';
+import { Upload, FileText, CheckCircle, ArrowRight, ArrowLeft, Loader2, Info, CreditCard, ShieldCheck, RefreshCw, Edit3, Lock, Book } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -19,6 +19,7 @@ const SubmissionPage = () => {
   const [apcAmount, setApcAmount] = useState(150);
   const [existingDraft, setExistingDraft] = useState(null);
   const [isReadOnly, setIsReadOnly] = useState(false);
+  const [activeIssue, setActiveIssue] = useState(null);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -28,6 +29,16 @@ const SubmissionPage = () => {
   });
   
   const [file, setFile] = useState(null);
+
+  useEffect(() => {
+    const fetchActiveIssue = async () => {
+      try {
+        const { data } = await api.get('/api/issues/current');
+        setActiveIssue(data);
+      } catch (err) { console.error('Failed to fetch active issue'); }
+    };
+    fetchActiveIssue();
+  }, []);
 
   // On mount: check for resume from payment callback, or load localStorage draft
   useEffect(() => {
@@ -209,6 +220,27 @@ const SubmissionPage = () => {
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        
+        {activeIssue && (
+          <motion.div initial={{opacity:0, y:-10}} animate={{opacity:1, y:0}} className="mb-8 bg-brand-900 border border-brand-800 rounded-3xl p-6 text-white flex flex-col md:flex-row items-center justify-between shadow-xl shadow-brand-900/10">
+             <div className="flex items-center space-x-6">
+                {activeIssue.cover_image_url ? (
+                  <img src={activeIssue.cover_image_url} alt="Volume Cover" className="w-16 h-20 object-cover rounded-xl shadow-md border border-white/10" />
+                ) : (
+                  <div className="w-16 h-20 bg-brand-800 rounded-xl flex items-center justify-center border border-white/5">
+                    <Book size={24} className="text-brand-400" />
+                  </div>
+                )}
+                <div>
+                   <p className="text-[10px] font-black uppercase tracking-widest text-accent-400 mb-1 flex items-center">
+                     <CheckCircle size={10} className="mr-1" /> Target Publication ({activeIssue.year})
+                   </p>
+                   <h2 className="text-2xl font-serif font-bold text-white mb-1">Vol. {activeIssue.volume} No. {activeIssue.issue_number}</h2>
+                   <p className="text-sm text-brand-300 max-w-md">{activeIssue.title || 'General Call for Papers. Your manuscript will be considered for this upcoming issue.'}</p>
+                </div>
+             </div>
+          </motion.div>
+        )}
         
         {/* Draft Resume Banner */}
         <AnimatePresence>

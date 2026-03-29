@@ -215,6 +215,23 @@ const Dashboard = () => {
                         {sub.title}
                       </h3>
 
+                      {/* Target Volume Info */}
+                      {sub.issue_volume && (
+                        <Link to={`/issue/${sub.issue_id}`} className="flex items-center p-3 mb-5 bg-neutral-50 rounded-xl border border-neutral-100 hover:border-accent-200 hover:bg-white transition-all group/issue">
+                          {sub.issue_cover ? (
+                             <img src={sub.issue_cover} alt="Volume Cover" className="w-10 h-10 object-cover rounded-md shadow-sm mr-3" />
+                          ) : (
+                             <div className="w-10 h-10 bg-brand-100 text-brand-400 rounded-md flex items-center justify-center mr-3">
+                                <BookOpen size={16} />
+                             </div>
+                          )}
+                          <div>
+                             <p className="text-[10px] font-black uppercase tracking-widest text-brand-400 group-hover/issue:text-accent-500 transition-colors mb-0.5">Target Publication</p>
+                             <p className="text-xs font-bold text-brand-800">Vol. {sub.issue_volume} No. {sub.issue_number} <span className="text-neutral-500 font-normal ml-1 truncate max-w-[150px] inline-block align-bottom">— {sub.issue_title || 'General Call'}</span></p>
+                          </div>
+                        </Link>
+                      )}
+
                       <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center text-neutral-400 capitalize text-xs">
                           <BookOpen size={14} className="mr-2 text-brand-200" /> {sub.discipline}
