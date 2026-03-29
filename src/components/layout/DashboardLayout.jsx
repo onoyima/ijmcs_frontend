@@ -38,11 +38,13 @@ const DashboardLayout = () => {
   const menuItems = {
     admin: [
       { icon: LayoutDashboard, label: 'Admin Overview',    path: '/admin?tab=overview' },
+      { icon: FileText,        label: 'Submitted Papers', path: '/editor/control' },
+      { icon: BookOpen,        label: 'Issue Manager',    path: '/editor/issues' },
+      { icon: Users,           label: 'Scholars',         path: '/admin?tab=users' },
+      { icon: CreditCard,      label: 'Finances',         path: '/admin?tab=payments' },
+      { icon: History,         label: 'Audit Trail',      path: '/admin?tab=audit' },
       { icon: BarChart,        label: 'My Metrics',       path: '/dashboard' },
       { icon: Send,            label: 'Submit Paper',     path: '/submit' },
-      { icon: Users,           label: 'Scholars',        path: '/admin?tab=users' },
-      { icon: CreditCard,      label: 'Finances',        path: '/admin?tab=payments' },
-      { icon: History,         label: 'Audit Trail',     path: '/admin?tab=audit' },
     ],
     editor: [
       { icon: Shield,         label: 'Control Panel',   path: '/editor/control' },
