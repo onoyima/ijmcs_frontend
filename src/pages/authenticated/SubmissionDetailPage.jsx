@@ -25,7 +25,10 @@ const SubmissionDetailPage = () => {
       try {
         const [subRes, revRes] = await Promise.all([
           api.get('/api/submissions/my-submissions'),
-          api.get(`/api/reviews/author/submission/${id}`)
+          api.get(`/api/reviews/author/submission/${id}`).catch(err => {
+            console.error('Failed to fetch reviews:', err);
+            return { data: [] };
+          })
         ]);
         
         const current = subRes.data.find(s => s.id == id);

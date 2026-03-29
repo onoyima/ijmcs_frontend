@@ -235,19 +235,10 @@ const Dashboard = () => {
                           {/* Receipt Download if Paid */}
                           {sub.is_paid && (
                             <a
-                              href={`${api.defaults.baseURL}/api/payments/receipt/${sub.payment_reference || sub.id}`}
+                              href={`${api.defaults.baseURL}/api/payments/receipt/${sub.payment_reference || sub.id}?token=${localStorage.getItem('accessToken')}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center text-xs font-bold text-green-600 hover:text-green-800"
-                              onClick={(e) => {
-                                // If we don't have a specific reference in the sub object, 
-                                // we might need to fetch it or use a different endpoint.
-                                // But for now, using a placeholder logic.
-                                if (!sub.payment_reference) {
-                                   // toast.error('Receipt reference not found');
-                                   // e.preventDefault();
-                                }
-                              }}
                             >
                               <Download size={14} className="mr-1" /> Receipt
                             </a>
@@ -259,6 +250,15 @@ const Dashboard = () => {
                               className="flex items-center text-xs font-bold text-amber-600 hover:text-amber-800"
                             >
                               <Edit3 size={14} className="mr-1" /> Continue
+                            </Link>
+                          )}
+                          {/* Edit Metadata if newly submitted */}
+                          {sub.status === 'submitted' && (
+                            <Link
+                              to={`/submit?resume=${sub.id}&step=1`}
+                              className="flex items-center text-xs font-bold text-brand-600 hover:text-brand-800"
+                            >
+                              <Edit3 size={14} className="mr-1" /> Edit Meta
                             </Link>
                           )}
                           {/* Resume payment if draft AND not paid */}

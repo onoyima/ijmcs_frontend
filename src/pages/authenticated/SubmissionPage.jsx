@@ -46,12 +46,15 @@ const SubmissionPage = () => {
                keywords: current.keywords,
                discipline: current.discipline
              });
-             // Only editable if draft (pending_payment) or requested for revision
-             const editable = ['pending_payment', 'revision_required'].includes(current.status);
+             // Only editable if draft (pending_payment), newly submitted (submitted), or requested for revision
+             const editable = ['pending_payment', 'submitted', 'revision_required'].includes(current.status);
              setIsReadOnly(!editable);
              
-             // If they already paid, go to Step 3
-             if (current.is_paid || current.status !== 'pending_payment') {
+             // If they request step 1 explicitly, let them edit metadata
+             if (resumeStep === 1) {
+               setStep(1);
+             } else if (current.is_paid || current.status !== 'pending_payment') {
+               // Otherwise, if returning from payment, default to step 3
                setStep(3);
              } else {
                setStep(resumeStep);
