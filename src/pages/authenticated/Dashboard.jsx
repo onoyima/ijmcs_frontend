@@ -27,17 +27,6 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Admins go directly to the full admin panel
-    if (user?.role === 'admin') {
-      navigate('/admin');
-      return;
-    }
-    // Editors go to the Editorial Control Panel
-    if (user?.role === 'editor') {
-      navigate('/editor/control');
-      return;
-    }
-    
     const dataFetch = async () => {
       try {
         // Author: always load their own submissions
