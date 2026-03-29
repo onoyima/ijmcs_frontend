@@ -21,9 +21,17 @@ const LoginPage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await login(email, password);
+      const user = await login(email, password);
       toast.success('Welcome back to IJMCS!');
-      navigate(from, { replace: true });
+      
+      // Determine default redirect based on role if no specific 'from' is set
+      let redirectPath = from;
+      if (from === '/dashboard') {
+        if (user.role === 'admin') redirectPath = '/admin';
+        else if (user.role === 'editor') redirectPath = '/editor/control';
+      }
+      
+      navigate(redirectPath, { replace: true });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Invalid email or password');
     } finally {
