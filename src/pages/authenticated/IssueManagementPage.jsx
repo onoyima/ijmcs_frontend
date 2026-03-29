@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../api/axiosInstance';
-import { Book, Plus, CheckCircle, Clock, Image as ImageIcon, ExternalLink, Trash2 } from 'lucide-react';
+import { Book, Plus, CheckCircle, Clock, Image as ImageIcon, Star, Trash2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const IssueManagementPage = () => {
@@ -11,18 +11,16 @@ const IssueManagementPage = () => {
   
   const [formData, setFormData] = useState({
     volume: '',
-    number: '',
+    issue_number: '',
     year: new Date().getFullYear(),
     title: '',
     description: '',
-    cover_image: ''
+    cover_image_url: ''
   });
 
   const fetchIssues = async () => {
     try {
-      // Fetching all issues (including unpublished for editors)
-      // I'll need a specific editor endpoint for this, but using /api/issues for now
-      const { data } = await api.get('/api/issues');
+      const { data } = await api.get('/api/admin/issues');
       setIssues(data);
     } catch (err) {
       console.error(err);
@@ -36,22 +34,44 @@ const IssueManagementPage = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/api/issues', formData);
+      await api.post('/api/admin/issues', formData);
       toast.success('Issue draft created');
       setShowModal(false);
       fetchIssues();
+      setFormData({ volume: '', issue_number: '', year: new Date().getFullYear(), title: '', description: '', cover_image_url: '' });
     } catch (err) {
       toast.error('Failed to create issue');
     }
   };
 
-  const handlePublish = async (id) => {
+  const handlePublish = async (id, currentStatus) => {
     try {
-      await api.post(`/api/issues/${id}/publish`);
-      toast.success('Issue published!');
+      await api.patch(`/api/admin/issues/${id}/publish`, { published: !currentStatus });
+      toast.success(`Issue ${!currentStatus ? 'published' : 'unpublished'}!`);
       fetchIssues();
     } catch (err) {
-      toast.error('Publication failed');
+      toast.error('Failed to update publication status');
+    }
+  };
+
+  const handleSetActive = async (id) => {
+    try {
+      await api.patch(`/api/admin/issues/${id}/set-active`);
+      toast.success('Set as active target for new submissions!');
+      fetchIssues();
+    } catch (err) {
+      toast.error('Failed to set active issue');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure? This cannot be undone if no articles are attached.")) return;
+    try {
+      await api.delete(`/api/admin/issues/${id}`);
+      toast.success('Issue deleted');
+      fetchIssues();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete issue');
     }
   };
 
@@ -60,7 +80,7 @@ const IssueManagementPage = () => {
         <header className="mb-12 flex items-center justify-between">
            <div>
               <h1 className="text-3xl font-serif font-bold text-brand-900 border-l-4 border-accent-500 pl-4">Issue Management</h1>
-              <p className="text-sm text-neutral-500 mt-1">Configure and publish upcoming volumes.</p>
+              <p className="text-sm text-neutral-500 mt-1">Configure volumes and set the active target for author submissions.</p>
            </div>
            <button 
              onClick={() => setShowModal(true)}
@@ -77,48 +97,63 @@ const IssueManagementPage = () => {
              <motion.div 
                key={issue.id}
                layout
-               className="bg-white rounded-[2.5rem] overflow-hidden shadow-card border border-brand-50 group hover:border-accent-200 transition-all"
+               className={`bg-white rounded-[2.5rem] overflow-hidden shadow-card border-2 transition-all ${issue.is_active ? 'border-accent-500 ring-4 ring-accent-50' : 'border-transparent group hover:border-accent-200'}`}
              >
                 <div className="aspect-[4/5] bg-neutral-100 relative">
-                   {issue.cover_image ? (
-                     <img src={issue.cover_image} alt="Cover" className="w-full h-full object-cover" />
+                   {issue.cover_image_url ? (
+                     <img src={issue.cover_image_url} alt="Cover" className="w-full h-full object-cover" />
                    ) : (
                      <div className="w-full h-full flex flex-col items-center justify-center text-neutral-300">
                         <ImageIcon size={48} />
                         <span className="text-[10px] mt-2 font-bold uppercase tracking-widest">No Cover Image</span>
                      </div>
                    )}
-                   <div className="absolute top-4 right-4 capitalize px-3 py-1 rounded-full text-[9px] font-bold bg-white/90 backdrop-blur shadow-sm">
-                      {issue.is_published ? (
-                        <span className="text-green-600 flex items-center"><CheckCircle size={10} className="mr-1" /> Published</span>
-                      ) : (
-                        <span className="text-neutral-500 flex items-center"><Clock size={10} className="mr-1" /> Draft</span>
-                      )}
+                   <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
+                     {issue.is_active && (
+                       <div className="px-3 py-1 rounded-full text-[10px] font-bold bg-accent-500 text-white shadow-md flex items-center shadow-accent-500/30">
+                          <Star size={12} className="mr-1 fill-white" /> Active Target
+                       </div>
+                     )}
+                     <div className="capitalize px-3 py-1 rounded-full text-[9px] font-bold bg-white/90 backdrop-blur shadow-sm inline-block">
+                        {issue.published ? (
+                          <span className="text-green-600 flex items-center"><CheckCircle size={10} className="mr-1" /> Published</span>
+                        ) : (
+                          <span className="text-neutral-500 flex items-center"><Clock size={10} className="mr-1" /> Draft</span>
+                        )}
+                     </div>
                    </div>
                 </div>
                 <div className="p-8">
-                   <h3 className="text-lg font-serif font-bold text-brand-900 mb-2">Vol. {issue.volume} No. {issue.number} ({issue.year})</h3>
-                   <p className="text-xs text-neutral-400 mb-6 truncate">{issue.title || "Untitled Issue"}</p>
+                   <h3 className="text-lg font-serif font-bold text-brand-900 mb-2">Vol. {issue.volume} No. {issue.issue_number} ({issue.year})</h3>
+                   <p className="text-xs text-neutral-400 mb-2 truncate">{issue.title || "Untitled Issue"}</p>
+                   <p className="text-xs text-neutral-500 font-medium mb-6">{issue.submission_count} Submissions • {issue.article_count} Articles</p>
                    
-                   <div className="flex gap-3">
-                      {!issue.is_published && (
+                   <div className="flex flex-col gap-2">
+                      <div className="flex gap-2">
                         <button 
-                          onClick={() => handlePublish(issue.id)}
-                          className="flex-grow py-3 bg-accent-500 text-white rounded-xl font-bold text-xs hover:bg-accent-400 transition-colors shadow-lg"
+                          onClick={() => handlePublish(issue.id, issue.published)}
+                          className={`flex-grow py-3 rounded-xl font-bold text-xs transition-colors shadow-sm ${issue.published ? 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200' : 'bg-brand-900 text-white hover:bg-brand-800'}`}
                         >
-                          Publish Now
+                          {issue.published ? 'Unpublish' : 'Publish'}
+                        </button>
+                        <button onClick={() => handleDelete(issue.id)} className="p-3 bg-neutral-50 text-neutral-400 rounded-xl hover:bg-red-50 hover:text-red-500 transition-colors">
+                           <Trash2 size={18} />
+                        </button>
+                      </div>
+                      {!issue.is_active && (
+                        <button 
+                          onClick={() => handleSetActive(issue.id)}
+                          className="w-full py-3 bg-accent-50 text-accent-700 rounded-xl font-bold text-xs border border-accent-100 hover:bg-accent-100 hover:border-accent-200 transition-colors"
+                        >
+                          Set as Active Target Issue
                         </button>
                       )}
-                      <button className="p-3 bg-neutral-50 text-neutral-400 rounded-xl hover:bg-red-50 hover:text-red-500 transition-colors">
-                         <Trash2 size={18} />
-                      </button>
                    </div>
                 </div>
              </motion.div>
            ))}
         </div>
 
-        {/* Create Modal Placeholder */}
         {showModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-900/60 backdrop-blur-sm">
              <motion.div 
@@ -130,6 +165,7 @@ const IssueManagementPage = () => {
                 <form onSubmit={handleCreate} className="space-y-6">
                    <div className="grid grid-cols-2 gap-6">
                       <input 
+                        type="number"
                         placeholder="Volume" 
                         required
                         className="w-full px-5 py-3 rounded-xl border border-neutral-100 focus:ring-2 focus:ring-accent-500 outline-none"
@@ -137,22 +173,37 @@ const IssueManagementPage = () => {
                         onChange={(e) => setFormData({...formData, volume: e.target.value})}
                       />
                       <input 
-                        placeholder="Number" 
+                        type="number"
+                        placeholder="Issue Number" 
                         required
                         className="w-full px-5 py-3 rounded-xl border border-neutral-100 focus:ring-2 focus:ring-accent-500 outline-none"
-                        value={formData.number}
-                        onChange={(e) => setFormData({...formData, number: e.target.value})}
+                        value={formData.issue_number}
+                        onChange={(e) => setFormData({...formData, issue_number: e.target.value})}
                       />
                    </div>
+                   <input 
+                     type="number"
+                     placeholder="Year" 
+                     required
+                     className="w-full px-5 py-3 rounded-xl border border-neutral-100 focus:ring-2 focus:ring-accent-500 outline-none"
+                     value={formData.year}
+                     onChange={(e) => setFormData({...formData, year: e.target.value})}
+                   />
                    <input 
                      placeholder="Issue Title (Optional)" 
                      className="w-full px-5 py-3 rounded-xl border border-neutral-100 focus:ring-2 focus:ring-accent-500 outline-none"
                      value={formData.title}
                      onChange={(e) => setFormData({...formData, title: e.target.value})}
                    />
+                   <input 
+                     placeholder="Cover Image URL (Optional)" 
+                     className="w-full px-5 py-3 rounded-xl border border-neutral-100 focus:ring-2 focus:ring-accent-500 outline-none"
+                     value={formData.cover_image_url}
+                     onChange={(e) => setFormData({...formData, cover_image_url: e.target.value})}
+                   />
                    <div className="flex gap-4">
                       <button type="submit" className="flex-grow py-4 bg-brand-800 text-white rounded-2xl font-bold shadow-xl">Create Draft</button>
-                      <button type="button" onClick={() => setShowModal(false)} className="px-8 py-4 bg-neutral-50 rounded-2xl font-bold">Cancel</button>
+                      <button type="button" onClick={() => setShowModal(false)} className="px-8 py-4 bg-neutral-50 rounded-2xl font-bold hover:bg-neutral-100">Cancel</button>
                    </div>
                 </form>
              </motion.div>
