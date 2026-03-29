@@ -60,7 +60,7 @@ const ReviewPage = () => {
   const manuscriptUrl = `${import.meta.env.VITE_API_URL}${assignment.file_path}`;
 
   return (
-    <div className="h-[calc(100vh-140px)] -mt-4 flex flex-col overflow-hidden bg-neutral-100 rounded-[2rem] border border-neutral-200">
+    <div className="min-h-[calc(100vh-160px)] lg:h-[calc(100vh-140px)] -mt-4 flex flex-col lg:overflow-hidden bg-neutral-100 rounded-[2rem] border border-neutral-200">
       {/* Workspace Header */}
       <header className="bg-white px-8 py-4 border-b border-neutral-200 flex items-center justify-between shrink-0">
         <div className="flex items-center space-x-4">
@@ -95,20 +95,20 @@ const ReviewPage = () => {
       {/* Main Workspace Split */}
       <div className="flex flex-grow overflow-hidden">
         {/* LEFT: PDF VIEWER */}
-        <div className="w-1/2 h-full bg-neutral-200 relative border-r border-neutral-300">
+        <div className="w-full lg:w-1/2 h-[450px] lg:h-full bg-neutral-200 relative border-b lg:border-b-0 lg:border-r border-neutral-300">
           <iframe 
             src={`${manuscriptUrl}#toolbar=0`} 
             className="w-full h-full border-none"
             title="Manuscript Viewer"
           />
           {/* Mobile Overlay fallback */}
-          <div className="hidden lg:absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-brand-900/80 backdrop-blur text-white text-[10px] font-bold rounded-full pointer-events-none">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-brand-900/80 backdrop-blur text-white text-[10px] font-bold rounded-full pointer-events-none whitespace-nowrap">
             Online PDF Reader Mode
           </div>
         </div>
 
         {/* RIGHT: EVALUATION FORM */}
-        <div className="w-1/2 h-full overflow-y-auto bg-white p-10 md:p-14 custom-scrollbar">
+        <div className="w-full lg:w-1/2 h-auto lg:h-full overflow-y-auto bg-white p-6 md:p-10 lg:p-14 custom-scrollbar">
           <form onSubmit={handleSubmit} className="space-y-10 max-w-2xl mx-auto pb-20">
             <div className="flex items-center space-x-3 mb-8">
               <div className="w-8 h-8 bg-accent-50 text-accent-600 rounded-lg flex items-center justify-center">

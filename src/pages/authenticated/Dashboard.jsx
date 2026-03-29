@@ -58,14 +58,14 @@ const Dashboard = () => {
 
         {/* Welcome Header */}
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
+          <div className="text-center md:text-left">
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-400 mb-2 block">
               {isReviewer ? 'Reviewer Portal' : 'Author Portal'}
             </span>
-            <h1 className="text-4xl font-serif font-bold text-brand-900 mb-2">
+            <h1 className="text-3xl md:text-4xl font-serif font-bold text-brand-900 mb-2">
               {isReviewer ? 'My Review Queue' : 'My Dashboard'}
             </h1>
-            <p className="text-neutral-500">
+            <p className="text-neutral-500 text-sm md:text-base">
               Welcome back, <span className="text-brand-700 font-bold">{user?.first_name}</span>. 
               {isReviewer ? ' Manuscripts awaiting your expert review.' : ' Track and manage your scholarly submissions.'}
             </p>
@@ -73,7 +73,7 @@ const Dashboard = () => {
           {/* Only Authors can submit — not reviewers */}
             <Link
               to="/submit"
-              className="bg-brand-800 hover:bg-brand-700 text-white px-8 py-4 rounded-2xl font-bold flex items-center space-x-3 transition-all shadow-xl hover:-translate-y-1"
+              className="bg-brand-800 hover:bg-brand-700 text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center space-x-3 transition-all shadow-xl hover:-translate-y-1 w-full md:w-auto"
             >
               <Plus size={20} /> <span>New Submission</span>
             </Link>
@@ -195,102 +195,102 @@ const Dashboard = () => {
                 ) : submissions.map((sub, idx) => {
                   const style = STATUS_STYLES[sub.status] || { bg: 'bg-neutral-100', text: 'text-neutral-500', label: sub.status };
                   const isDraft = sub.status === 'pending_payment';
-                  const needsRevision = sub.status === 'revision_required';
                   return (
                     <motion.div
                       key={sub.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.08 }}
-                      className="bg-white p-8 rounded-[2.5rem] shadow-card border border-brand-50 hover:border-brand-200 transition-all group"
                     >
-                      <div className="flex justify-between items-start gap-4 mb-4">
-                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${style.bg} ${style.text}`}>
-                          {style.label}
-                        </span>
-                        <span className="text-xs text-neutral-400">{new Date(sub.created_at).toLocaleDateString()}</span>
-                      </div>
-
-                      <h3 className="text-xl font-serif font-bold text-brand-900 mb-4 leading-snug group-hover:text-brand-700 transition-colors">
-                        {sub.title}
-                      </h3>
-
-                      {/* Target Volume Info */}
-                      {sub.issue_volume && (
-                        <Link to={`/issue/${sub.issue_id}`} className="flex items-center p-3 mb-5 bg-neutral-50 rounded-xl border border-neutral-100 hover:border-accent-200 hover:bg-white transition-all group/issue">
-                          {sub.issue_cover ? (
-                             <img src={sub.issue_cover} alt="Volume Cover" className="w-10 h-10 object-cover rounded-md shadow-sm mr-3" />
-                          ) : (
-                             <div className="w-10 h-10 bg-brand-100 text-brand-400 rounded-md flex items-center justify-center mr-3">
-                                <BookOpen size={16} />
-                             </div>
-                          )}
-                          <div>
-                             <p className="text-[10px] font-black uppercase tracking-widest text-brand-400 group-hover/issue:text-accent-500 transition-colors mb-0.5">Target Publication</p>
-                             <p className="text-xs font-bold text-brand-800">Vol. {sub.issue_volume} No. {sub.issue_number} <span className="text-neutral-500 font-normal ml-1 truncate max-w-[150px] inline-block align-bottom">— {sub.issue_title || 'General Call'}</span></p>
-                          </div>
-                        </Link>
-                      )}
-
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center text-neutral-400 capitalize text-xs">
-                          <BookOpen size={14} className="mr-2 text-brand-200" /> {sub.discipline}
+                      <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-card border border-brand-50 hover:border-brand-200 transition-all group">
+                        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
+                          <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${style.bg} ${style.text}`}>
+                            {style.label}
+                          </span>
+                          <span className="text-xs text-neutral-400">{new Date(sub.created_at).toLocaleDateString()}</span>
                         </div>
 
-                        <div className="flex items-center space-x-4">
-                          {/* Receipt Download if Paid */}
-                          {sub.is_paid && (
-                            <a
-                              href={`${api.defaults.baseURL}/api/payments/receipt/${sub.payment_reference || sub.id}?token=${localStorage.getItem('accessToken')}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center text-xs font-bold text-green-600 hover:text-green-800"
-                            >
-                              <Download size={14} className="mr-1" /> Receipt
-                            </a>
-                          )}
-                          {/* Resume/Continue if draft */}
-                          {isDraft && (
-                            <Link
-                              to={`/submit?resume=${sub.id}&step=2`}
-                              className="flex items-center text-xs font-bold text-amber-600 hover:text-amber-800"
-                            >
-                              <Edit3 size={14} className="mr-1" /> Continue
-                            </Link>
-                          )}
-                          {/* Edit Metadata if newly submitted */}
-                          {sub.status === 'submitted' && (
-                            <Link
-                              to={`/submit?resume=${sub.id}&step=1`}
-                              className="flex items-center text-xs font-bold text-brand-600 hover:text-brand-800"
-                            >
-                              <Edit3 size={14} className="mr-1" /> Edit Meta
-                            </Link>
-                          )}
-                          {/* Resume payment if draft AND not paid */}
-                          {isDraft && !sub.is_paid && (
-                            <Link
-                              to={`/payment/${sub.id}`}
-                              className="flex items-center text-xs font-bold text-amber-600 hover:text-amber-800"
-                            >
-                              <CreditCard size={14} className="mr-1" /> Pay APC
-                            </Link>
-                          )}
-                          {/* Upload revision if requested */}
-                          {needsRevision && (
-                            <Link
-                              to={`/submit?resume=${sub.id}&step=3`}
-                              className="flex items-center text-xs font-bold text-orange-600 hover:text-orange-800"
-                            >
-                              <Edit3 size={14} className="mr-1" /> Upload Revision
-                            </Link>
-                          )}
-                          <Link
-                            to={`/submission/${sub.id}`}
-                            className="flex items-center text-xs font-bold text-brand-800 hover:text-brand-600"
-                          >
-                            <Eye size={14} className="mr-1" /> View
+                        <h3 className="text-lg md:text-xl font-serif font-bold text-brand-900 mb-4 leading-snug group-hover:text-brand-700 transition-colors line-clamp-2 md:line-clamp-none">
+                          {sub.title}
+                        </h3>
+
+                        {/* Target Volume Info */}
+                        {sub.issue_volume && (
+                          <Link to={`/issue/${sub.issue_id}`} className="flex items-center p-3 mb-5 bg-neutral-50 rounded-xl border border-neutral-100 hover:border-accent-200 hover:bg-white transition-all group/issue">
+                            {sub.issue_cover ? (
+                               <img src={sub.issue_cover} alt="Volume Cover" className="w-10 h-10 object-cover rounded-md shadow-sm mr-3" />
+                            ) : (
+                               <div className="w-10 h-10 bg-brand-100 text-brand-400 rounded-md flex items-center justify-center mr-3">
+                                  <BookOpen size={16} />
+                               </div>
+                            )}
+                             <div className="flex-grow min-w-0">
+                               <p className="text-[10px] font-black uppercase tracking-widest text-brand-400 group-hover/issue:text-accent-500 transition-colors mb-0.5">Target Publication</p>
+                               <p className="text-xs font-bold text-brand-800 truncate">Vol. {sub.issue_volume} No. {sub.issue_number} <span className="text-neutral-500 font-normal ml-1 hidden sm:inline-block align-bottom">— {sub.issue_title || 'General Call'}</span></p>
+                            </div>
                           </Link>
+                        )}
+
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-sm mt-6 pt-6 border-t border-neutral-50">
+                          <div className="flex items-center text-neutral-400 capitalize text-xs">
+                            <BookOpen size={14} className="mr-2 text-brand-200" /> {sub.discipline}
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+                            {/* Receipt Download if Paid */}
+                            {sub.is_paid && (
+                              <a
+                                href={`${api.defaults.baseURL}/api/payments/receipt/${sub.payment_reference || sub.id}?token=${localStorage.getItem('accessToken')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center text-xs font-bold text-green-600 hover:text-green-800"
+                              >
+                                <Download size={14} className="mr-1" /> Receipt
+                              </a>
+                            )}
+                            {/* Resume/Continue if draft */}
+                            {isDraft && (
+                              <Link
+                                to={`/submit?resume=${sub.id}&step=2`}
+                                className="flex items-center text-xs font-bold text-amber-600 hover:text-amber-800"
+                              >
+                                <Edit3 size={14} className="mr-1" /> Continue
+                              </Link>
+                            )}
+                            {/* Edit Metadata if newly submitted */}
+                            {sub.status === 'submitted' && (
+                              <Link
+                                to={`/submit?resume=${sub.id}&step=1`}
+                                className="flex items-center text-xs font-bold text-brand-600 hover:text-brand-800"
+                              >
+                                <Edit3 size={14} className="mr-1" /> Edit Meta
+                              </Link>
+                            )}
+                            {/* Resume payment if draft AND not paid */}
+                            {isDraft && !sub.is_paid && (
+                              <Link
+                                to={`/payment/${sub.id}`}
+                                className="flex items-center text-xs font-bold text-amber-600 hover:text-amber-800"
+                              >
+                                <CreditCard size={14} className="mr-1" /> Pay APC
+                              </Link>
+                            )}
+                            {/* Upload revision if requested */}
+                            {needsRevision && (
+                              <Link
+                                to={`/submit?resume=${sub.id}&step=3`}
+                                className="flex items-center text-xs font-bold text-orange-600 hover:text-orange-800"
+                              >
+                                <Edit3 size={14} className="mr-1" /> Revision
+                              </Link>
+                            )}
+                            <Link
+                              to={`/submission/${sub.id}`}
+                              className="flex items-center text-xs font-bold text-brand-800 hover:text-brand-600"
+                            >
+                              <Eye size={14} className="mr-1" /> View
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     </motion.div>

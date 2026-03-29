@@ -187,16 +187,16 @@ const AdminDashboardPage = () => {
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex-grow">
-        <header className="mb-12 flex justify-between items-end">
-          <div>
-            <span className="text-brand-500 font-black uppercase text-[10px] tracking-widest mb-1 block">Administrative Dashboard</span>
-            <h1 className="text-4xl font-serif font-bold text-brand-900 capitalize">
+        <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="flex-grow">
+            <span className="text-brand-500 font-black uppercase text-[10px] tracking-widest mb-1 block text-center md:text-left">Administrative Dashboard</span>
+            <h1 className="text-3xl md:text-4xl font-serif font-bold text-center md:text-left text-brand-900 capitalize">
               {tabs.find(t => t.id === activeTab)?.label}
             </h1>
           </div>
           
           {(activeTab === 'users' || activeTab === 'payments') && (
-            <div className="flex bg-white rounded-2xl shadow-sm border border-brand-100 p-2 w-80">
+            <div className="flex bg-white rounded-2xl shadow-sm border border-brand-100 p-2 w-full md:w-80">
                 <div className="p-3 text-neutral-400"><Search size={18} /></div>
                 <input 
                   value={search}
@@ -268,8 +268,9 @@ const AdminDashboardPage = () => {
 
             {/* USERS TAB */}
             {activeTab === 'users' && (
-              <div className="bg-white rounded-[3rem] shadow-card border border-brand-50 overflow-hidden">
-                <table className="w-full text-left">
+              <div className="bg-white rounded-[2rem] md:rounded-[3rem] shadow-card border border-brand-50 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left min-w-[800px] md:min-w-0">
                   <thead className="bg-brand-50/50">
                     <tr>
                       <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900">Scholar Details</th>
@@ -347,7 +348,8 @@ const AdminDashboardPage = () => {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                  </table>
+                </div>
               </div>
             )}
 
@@ -382,8 +384,9 @@ const AdminDashboardPage = () => {
                    </form>
                 </div>
 
-                <div className="bg-white rounded-[3rem] shadow-card border border-brand-50 overflow-hidden">
-                   <table className="w-full text-left">
+                <div className="bg-white rounded-[2rem] md:rounded-[3rem] shadow-card border border-brand-50 overflow-hidden">
+                   <div className="overflow-x-auto">
+                      <table className="w-full text-left min-w-[900px] md:min-w-0">
                       <thead className="bg-brand-50/50">
                          <tr>
                             <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900">Reference / Status</th>
@@ -427,7 +430,8 @@ const AdminDashboardPage = () => {
                          </tr>
                        ))}
                     </tbody>
-                 </table>
+                  </table>
+                </div>
               </div>
             </div>
             )}
@@ -606,12 +610,12 @@ const AdminDashboardPage = () => {
         {/* Announcement Modal */}
         <AnimatePresence>
           {showAnnModal && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-brand-900/40 backdrop-blur-md">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-brand-900/40 backdrop-blur-md">
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="bg-white w-full max-w-2xl rounded-[3rem] p-12 shadow-2xl relative"
+                className="bg-white w-full max-w-2xl rounded-[2rem] md:rounded-[3rem] p-8 md:p-12 shadow-2xl relative max-h-[90vh] overflow-y-auto"
               >
                 <div className="mb-10">
                   <h2 className="text-3xl font-serif font-bold text-brand-900">{editingAnn ? 'Refine Proclamation' : 'New Proclamation'}</h2>
@@ -697,12 +701,12 @@ const AdminDashboardPage = () => {
         {/* User Edit Modal */}
         <AnimatePresence>
           {showUserEditModal && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-brand-900/40 backdrop-blur-md">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-brand-900/40 backdrop-blur-md">
                <motion.div 
                  initial={{ opacity: 0, scale: 0.95 }}
                  animate={{ opacity: 1, scale: 1 }}
                  exit={{ opacity: 0, scale: 0.95 }}
-                 className="bg-white w-full max-w-lg rounded-[3.5rem] p-12 shadow-2xl relative"
+                 className="bg-white w-full max-w-lg rounded-[2.5rem] md:rounded-[3.5rem] p-8 md:p-12 shadow-2xl relative max-h-[90vh] overflow-y-auto"
                >
                  <div className="mb-10 text-center">
                    <div className="w-20 h-20 bg-brand-900 text-accent-500 rounded-[2rem] flex items-center justify-center font-serif font-black text-3xl mx-auto mb-6 shadow-xl">

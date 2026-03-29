@@ -289,12 +289,12 @@ const SubmissionPage = () => {
           ></div>
           {steps.map(s => (
             <div key={s.id} className="relative z-10 flex flex-col items-center">
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-500 ${
+              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-bold text-base md:text-lg transition-all duration-500 ${
                 step >= s.id ? 'bg-brand-800 text-white shadow-lg' : 'bg-white text-neutral-400 border-2 border-neutral-100'
               }`}>
-                {step > s.id ? <CheckCircle size={20} /> : <s.icon size={20} />}
+                {step > s.id ? <CheckCircle size={18} /> : <s.icon size={18} />}
               </div>
-              <span className={`text-[10px] uppercase tracking-widest font-black mt-3 ${step >= s.id ? 'text-brand-800' : 'text-neutral-300'}`}>
+              <span className={`text-[8px] md:text-[10px] uppercase tracking-widest font-black mt-3 ${step >= s.id ? 'text-brand-800' : 'text-neutral-300'} hidden sm:block`}>
                 {s.label}
               </span>
             </div>
@@ -315,8 +315,8 @@ const SubmissionPage = () => {
               >
                 <div className="mb-12 flex items-start justify-between">
                   <div>
-                    <h2 className="text-4xl font-serif font-bold text-brand-900 mb-2">Manuscript Ledger</h2>
-                    <p className="text-neutral-400 italic font-medium">Step 1: Define your research metadata. Progress is auto-saved.</p>
+                    <h2 className="text-2xl md:text-4xl font-serif font-bold text-brand-900 mb-2">Manuscript Ledger</h2>
+                    <p className="text-neutral-400 text-xs md:text-sm italic font-medium">Step 1: Define your research metadata. Progress is auto-saved.</p>
                   </div>
                   <div className="flex items-center space-x-2 bg-green-50 text-green-700 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-green-100 shrink-0">
                     <RefreshCw size={12} className="animate-spin" />
@@ -340,7 +340,7 @@ const SubmissionPage = () => {
                       value={formData.title}
                       onChange={(e) => handleFormChange('title', e.target.value)}
                       rows={2}
-                      className="w-full px-8 py-5 bg-neutral-50 border border-neutral-100 rounded-3xl focus:ring-4 focus:ring-brand-500/10 outline-none resize-none font-serif text-2xl font-bold text-brand-900 shadow-inner disabled:opacity-60"
+                      className="w-full px-6 md:px-8 py-4 md:py-5 bg-neutral-50 border border-neutral-100 rounded-2xl md:rounded-3xl focus:ring-4 focus:ring-brand-500/10 outline-none resize-none font-serif text-xl md:text-2xl font-bold text-brand-900 shadow-inner disabled:opacity-60"
                       placeholder="Enter the full title..."
                     />
                   </div>
@@ -470,7 +470,7 @@ const SubmissionPage = () => {
                 </div>
 
                 <form onSubmit={handleFileUpload} className="w-full max-w-xl">
-                  <label className="group relative block w-full aspect-[2/1] bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-[3rem] hover:border-brand-500 hover:bg-brand-50 transition-all cursor-pointer overflow-hidden">
+                  <label className="group relative block w-full aspect-square md:aspect-[2/1] bg-neutral-50 border-2 border-dashed border-neutral-200 rounded-[2.5rem] md:rounded-[3rem] hover:border-brand-500 hover:bg-brand-50 transition-all cursor-pointer overflow-hidden">
                     <input
                       type="file"
                       accept=".doc,.docx,.pdf"

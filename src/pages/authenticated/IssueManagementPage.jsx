@@ -97,10 +97,10 @@ const IssueManagementPage = () => {
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <header className="mb-12 flex items-center justify-between">
+        <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
            <div>
-              <h1 className="text-3xl font-serif font-bold text-brand-900 border-l-4 border-accent-500 pl-4">Issue Management</h1>
-              <p className="text-sm text-neutral-500 mt-1">Configure volumes and set the active target for author submissions.</p>
+              <h1 className="text-2xl md:text-3xl font-serif font-bold text-brand-900 border-l-4 border-accent-500 pl-4">Issue Management</h1>
+              <p className="text-xs md:text-sm text-neutral-500 mt-1">Configure volumes and set the active target for author submissions.</p>
            </div>
            <button 
              onClick={() => {
@@ -108,7 +108,7 @@ const IssueManagementPage = () => {
                 setFormData({ volume: '', issue_number: '', year: new Date().getFullYear(), title: '', description: '', cover_image_url: '' });
                 setShowModal(true);
              }}
-             className="bg-brand-800 text-white px-8 py-4 rounded-2xl font-bold flex items-center space-x-3 shadow-xl hover:bg-brand-700 transition-all"
+             className="bg-brand-800 text-white px-6 md:px-8 py-4 rounded-xl md:rounded-2xl font-bold flex items-center justify-center space-x-3 shadow-xl hover:bg-brand-700 transition-all w-full md:w-auto"
            >
              <Plus size={20} /> <span>Create New Issue</span>
            </button>
@@ -182,13 +182,13 @@ const IssueManagementPage = () => {
         </div>
 
         {showModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-900/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-brand-900/60 backdrop-blur-sm overflow-y-auto">
              <motion.div 
                initial={{ opacity: 0, scale: 0.9 }}
                animate={{ opacity: 1, scale: 1 }}
-               className="bg-white w-full max-w-xl rounded-[3rem] p-10 md:p-14 shadow-2xl relative"
+               className="bg-white w-full max-w-xl rounded-[2rem] md:rounded-[3rem] p-8 md:p-14 shadow-2xl relative my-auto max-h-[90vh] overflow-y-auto"
              >
-                <h2 className="text-2xl font-serif font-bold text-brand-900 mb-8">{editingId ? 'Edit Issue Configuration' : 'New Issue Configuration'}</h2>
+                <h2 className="text-xl md:text-2xl font-serif font-bold text-brand-900 mb-8">{editingId ? 'Edit Issue Configuration' : 'New Issue Configuration'}</h2>
                 <form onSubmit={handleCreateOrUpdate} className="space-y-6">
                    <div className="grid grid-cols-2 gap-6">
                       <input 

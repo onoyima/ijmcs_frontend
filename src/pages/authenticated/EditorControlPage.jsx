@@ -30,16 +30,17 @@ const EditorControlPage = () => {
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-8">
-           <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-brand-900 text-white rounded-3xl flex items-center justify-center shadow-xl">
-                 <Shield size={32} />
-              </div>
-              <div>
-                 <h1 className="text-3xl font-serif font-bold text-brand-900">Editorial Control Panel</h1>
-                 <p className="text-neutral-500 text-sm">Overseeing the IJMCS scholarship ecosystem.</p>
-              </div>
-           </div>
+         <header className="mb-12 flex flex-col xl:flex-row xl:items-center justify-between gap-8">
+            <div className="flex items-center space-x-4">
+               <div className="w-12 h-12 md:w-16 md:h-16 bg-brand-900 text-white rounded-2xl md:rounded-3xl flex items-center justify-center shadow-xl shrink-0">
+                  <Shield size={24} className="md:hidden" />
+                  <Shield size={32} className="hidden md:block" />
+               </div>
+               <div>
+                  <h1 className="text-2xl md:text-3xl font-serif font-bold text-brand-900">Editorial Control Panel</h1>
+                  <p className="text-neutral-500 text-xs md:text-sm">Overseeing the IJMCS scholarship ecosystem.</p>
+               </div>
+            </div>
 
            <div className="flex bg-white rounded-2xl shadow-sm border border-brand-100 p-2 w-full md:w-96">
               <div className="p-3 text-neutral-400"><Search size={20} /></div>
@@ -52,16 +53,16 @@ const EditorControlPage = () => {
            </div>
         </header>
 
-        <section className="bg-white rounded-[3rem] shadow-card border border-brand-50 overflow-hidden">
-           <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+        <section className="bg-white rounded-[2rem] md:rounded-[3rem] shadow-card border border-brand-50 overflow-hidden">
+           <div className="overflow-x-auto overflow-y-hidden">
+              <table className="w-full text-left border-collapse min-w-[700px] md:min-w-0">
                  <thead>
                     <tr className="bg-brand-50/50">
-                       <th className="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-brand-900">Manuscript Details</th>
-                       <th className="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-brand-900">Author</th>
-                       <th className="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-brand-900">Status</th>
-                       <th className="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-brand-900">Submitted</th>
-                       <th className="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-brand-900 text-right">Actions</th>
+                       <th className="px-6 md:px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-brand-900">Manuscript Details</th>
+                       <th className="px-6 md:px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-brand-900">Author</th>
+                       <th className="px-6 md:px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-brand-900">Status</th>
+                       <th className="px-6 md:px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-brand-900">Submitted</th>
+                       <th className="px-6 md:px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-brand-900 text-right">Actions</th>
                     </tr>
                  </thead>
                  <tbody className="divide-y divide-neutral-100">
