@@ -195,6 +195,7 @@ const Dashboard = () => {
                 ) : submissions.map((sub, idx) => {
                   const style = STATUS_STYLES[sub.status] || { bg: 'bg-neutral-100', text: 'text-neutral-500', label: sub.status };
                   const isDraft = sub.status === 'pending_payment';
+                  const needsRevision = sub.status === 'revision_required';
                   return (
                     <motion.div
                       key={sub.id}

@@ -16,6 +16,16 @@ function AppContent() {
   const location = useLocation();
   const { loading } = useAuth();
   
+  const isPortal = location.pathname.startsWith('/dashboard') || 
+                   location.pathname.startsWith('/admin') || 
+                   location.pathname.startsWith('/editor') || 
+                   location.pathname.startsWith('/submit') || 
+                   location.pathname.startsWith('/profile') || 
+                   location.pathname.startsWith('/review') || 
+                   location.pathname.startsWith('/payment') || 
+                   location.pathname.startsWith('/submission') ||
+                   location.pathname.startsWith('/payment-callback');
+
   return (
     <div className="flex flex-col min-h-screen selection:bg-accent-500 selection:text-brand-900 cursor-none">
       <AnimatePresence>
@@ -38,11 +48,11 @@ function AppContent() {
         className: 'font-serif rounded-2xl shadow-2xl border border-brand-50',
         duration: 4000
       }} />
-      <Navbar />
+      {!isPortal && <Navbar />}
       <main className="flex-grow relative">
         <AppRouter />
       </main>
-      <Footer />
+      {!isPortal && <Footer />}
     </div>
   );
 }
