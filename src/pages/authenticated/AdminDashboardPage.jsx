@@ -4,7 +4,7 @@ import api from '../../api/axiosInstance';
 import { 
   Users, FileText, CheckCircle, Settings, Search, TrendingUp, 
   Shield, Mail, CreditCard, History, MessageSquare, Save, 
-  ChevronRight, AlertCircle, RefreshCw, BookOpen, Plus, Trash2, ShieldCheck, Globe
+  ChevronRight, AlertCircle, RefreshCw, BookOpen, Plus, Trash2, ShieldCheck, Globe, Download, Loader2
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -24,6 +24,8 @@ const AdminDashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [apcAmount, setApcAmount] = useState('150');
+  const [verifyRef, setVerifyRef] = useState('');
+  const [verifying, setVerifying] = useState(false);
 
   // Sync tab with URL
   useEffect(() => {
@@ -141,6 +143,22 @@ const AdminDashboardPage = () => {
     } catch (err) {
       console.error('❌ Announcement operation failed:', err.response?.data || err.message);
       toast.error(err.response?.data?.message || 'Operation failed');
+    }
+  };
+
+  const handleVerifyPayment = async (e) => {
+    e.preventDefault();
+    if (!verifyRef.trim()) return toast.error('Please enter a Paystack reference');
+    setVerifying(true);
+    try {
+      const { data } = await api.post(`/api/admin/payments/verify/${verifyRef.trim()}`);
+      toast.success(data.message || 'Payment successfully synchronized');
+      setVerifyRef('');
+      fetchDashData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Payment verification failed');
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -335,16 +353,45 @@ const AdminDashboardPage = () => {
 
             {/* PAYMENTS TAB */}
             {activeTab === 'payments' && (
-              <div className="bg-white rounded-[3rem] shadow-card border border-brand-50 overflow-hidden">
-                 <table className="w-full text-left">
-                    <thead className="bg-brand-50/50">
-                       <tr>
-                          <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900">Reference / Status</th>
-                          <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900">Scholar</th>
-                          <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900">Manuscript</th>
-                          <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900 text-right">Amount</th>
-                       </tr>
-                    </thead>
+              <div className="space-y-8">
+                {/* Manual Verify Tool */}
+                <div className="bg-white rounded-[2rem] p-8 shadow-card border border-brand-50 flex flex-col md:flex-row items-center justify-between gap-6">
+                   <div>
+                      <h3 className="text-xl font-serif font-bold text-brand-900 flex items-center mb-1">
+                         <ShieldCheck className="mr-2 text-accent-500" size={24} /> Manual Synchronization
+                      </h3>
+                      <p className="text-xs text-neutral-500 max-w-md">
+                         If an author's payment dropped from the webhook, enter the Paystack reference here to forcefully verify and sync the transaction.
+                      </p>
+                   </div>
+                   <form onSubmit={handleVerifyPayment} className="flex items-center space-x-3 w-full md:w-auto">
+                      <input 
+                        value={verifyRef}
+                        onChange={(e) => setVerifyRef(e.target.value)}
+                        placeholder="Paystack Ref (e.g. T4509...)"
+                        className="px-6 py-4 bg-neutral-50 border border-neutral-100 rounded-2xl outline-none focus:ring-4 focus:ring-accent-500/10 text-sm font-bold text-brand-900 w-full md:w-64"
+                      />
+                      <button 
+                        type="submit"
+                        disabled={verifying}
+                        className="px-8 py-4 bg-brand-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl hover:bg-brand-800 transition-all disabled:opacity-50 flex items-center shrink-0"
+                      >
+                         {verifying ? <Loader2 className="animate-spin mr-2" size={16} /> : null}
+                         {verifying ? 'Syncing...' : 'Verify'}
+                      </button>
+                   </form>
+                </div>
+
+                <div className="bg-white rounded-[3rem] shadow-card border border-brand-50 overflow-hidden">
+                   <table className="w-full text-left">
+                      <thead className="bg-brand-50/50">
+                         <tr>
+                            <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900">Reference / Status</th>
+                            <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900">Scholar</th>
+                            <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900">Manuscript</th>
+                            <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-brand-900 text-right">Amount / Action</th>
+                         </tr>
+                      </thead>
                     <tbody className="divide-y divide-neutral-100">
                        {data.payments.map((p) => (
                          <tr key={p.id} className="hover:bg-neutral-50/50 transition-colors">
@@ -366,16 +413,23 @@ const AdminDashboardPage = () => {
                                </p>
                             </td>
                             <td className="px-10 py-8 text-right">
-                               <div className="text-lg font-black text-brand-900 tracking-tighter">
+                               <div className="text-lg font-black text-brand-900 tracking-tighter mb-2">
                                   ${parseFloat(p.amount).toFixed(2)}
                                </div>
-                               <span className="text-[10px] text-neutral-400">{new Date(p.created_at).toLocaleDateString()}</span>
+                               <a 
+                                  href={`${api.defaults.baseURL}/api/payments/receipt/${p.reference}?token=${localStorage.getItem('accessToken')}`}
+                                  target="_blank" rel="noopener noreferrer"
+                                  className="inline-flex items-center text-[10px] font-bold text-green-600 hover:text-green-800 uppercase tracking-widest"
+                               >
+                                  <Download className="mr-1" size={12} /> Receipt
+                               </a>
                             </td>
                          </tr>
                        ))}
                     </tbody>
                  </table>
               </div>
+            </div>
             )}
 
             {/* AUDIT TAB */}

@@ -83,7 +83,12 @@ const EditorControlPage = () => {
                             <h3 className="font-serif font-bold text-brand-900 truncate mb-1 group-hover:text-accent-500 transition-colors" title={sub.title}>
                                {sub.title}
                             </h3>
-                            <span className="text-[10px] text-neutral-400 font-mono tracking-tighter uppercase">{sub.discipline}</span>
+                            <div className="flex items-center space-x-2">
+                               <span className="text-[10px] text-neutral-400 font-mono tracking-tighter uppercase border-r border-neutral-200 pr-2">{sub.discipline}</span>
+                               <span className="text-[10px] text-brand-600 font-bold tracking-widest uppercase">
+                                  {sub.issue_volume ? `Vol ${sub.issue_volume} No ${sub.issue_number}` : 'Unassigned'}
+                               </span>
+                            </div>
                          </td>
                          <td className="px-8 py-8">
                             <div className="flex items-center space-x-3">

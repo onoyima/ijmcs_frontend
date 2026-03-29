@@ -182,11 +182,11 @@ const Dashboard = () => {
               </section>
             )}
 
-            {/* ── AUTHOR SECTION: My Manuscripts ── */}
+            {/* ── AUTHOR SECTION: Submission History ── */}
             {!isReviewer && (
               <section className="space-y-6">
                 <div className="flex items-center space-x-4 mb-4">
-                  <h2 className="text-xl font-serif font-bold text-brand-800">My Manuscripts</h2>
+                  <h2 className="text-xl font-serif font-bold text-brand-800">Submission History</h2>
                   <div className="flex-grow h-px bg-neutral-200"></div>
                 </div>
 
